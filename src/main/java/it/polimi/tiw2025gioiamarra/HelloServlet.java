@@ -11,6 +11,7 @@ public class HelloServlet extends HttpServlet {
 
     public void init() {
         message = "Hello World!";
+        System.out.println("### HelloServlet INIT - servlet caricata correttamente!");
     }
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {

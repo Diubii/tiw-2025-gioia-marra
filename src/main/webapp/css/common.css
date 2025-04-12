@@ -1,0 +1,207 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Serif:ital,opsz,wght@0,8..144,100..900;1,8..144,100..900&display=swap');
+
+.roboto-serif * {
+    font-family: "Roboto Serif", serif;
+    font-optical-sizing: auto;
+    font-weight: 100;
+    font-style: normal;
+    font-variation-settings:
+            "wdth" 100,
+            "GRAD" 0;
+}
+
+
+*{
+    margin: 0;
+    box-sizing: border-box;
+    border: none;
+}
+
+html, body{
+    height: 100%;
+    width: 100%;
+}
+
+body{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.container{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: .3rem;
+}
+
+form{
+    display: flex;
+    flex-direction: column;
+    gap: .3rem;
+}
+
+button{
+    border-radius: 5px;
+}
+
+a{
+    text-decoration: none;
+}
+
+.btn-submit{
+    background-color: darkseagreen;
+}
+.btn-submit:hover{
+    background-color: mediumseagreen;
+}
+
+
+.min-xxxs-h{
+    min-height: .1rem;
+}
+.min-xxxs-w{
+    min-width: .1rem;
+}
+.min-xxxs{
+    min-height: .1rem;
+    min-width: .1rem;
+}
+.xxxs-h{
+    height: 10%;
+}
+.xxxs-w{
+    width: 10%;
+}
+.xxxs{
+    height: 10%;
+    width: 10%;
+}
+.max-xxxs-h{
+    max-height: 10%;
+}
+.max-xxxs-w{
+    max-width: 10%;
+}
+.max-xxxs{
+    max-height: 10%;
+    max-width: 10%;
+}
+
+.min-xxs-h{
+    min-height: .15rem;
+}
+.min-xxs-w{
+    min-width: .15rem;
+}
+.min-xxs{
+    min-height: 1rem;
+    min-width: 1rem;
+}
+.xxs-h{
+    height: 15%;
+}
+.xxs-w{
+    width: 15%;
+}
+.xxs{
+    height: 15%;
+    width: 15%;
+}
+.max-xxs-h{
+    max-height: 15%;
+}
+.max-xxs-w{
+    max-width: 15%;
+}
+.max-xxs{
+    max-height: 15%;
+    max-width: 15%;
+}
+
+.xs-h{
+    height: 20%;
+}
+.xs-w{
+    width: 20%;
+}
+.xs{
+    height: 20%;
+    width: 20%;
+}
+
+.s-h{
+    height: 25%;
+}
+.s-w{
+    width: 25%;
+}
+.s{
+    height: 25%;
+    width: 25%;
+}
+
+.m-h{
+    height: 50%;
+}
+.m-w{
+    width: 50%;
+}
+.m{
+    height: 50%;
+    width: 50%;
+}
+
+.l-h{
+    height: 75%;
+}
+.l-w{
+    width: 75%;
+}
+.l{
+    height: 75%;
+    width: 75%;
+}
+
+.full-h{
+    height: 100%;
+}
+.full-w{
+    width: 100%;
+}
+.full{
+    height: 100%;
+    width: 100%;
+}
+
+/*Font size*/
+.fs-s{
+    font-size: small;
+}
+.fs-m{
+    font-size: medium;
+}
+.fs-l{
+    font-size: large;
+}
+/*Font weight*/
+.fw-s{
+    font-weight: lighter;
+}
+.fw-m{
+    font-weight: normal;
+}
+.fw-l{
+    font-weight: bold;
+}
+
+.trans-fast{
+    transition: all 0.15s ease;
+}
+.trans{
+    transition: all 0.3s ease;
+}
+.trans-slow{
+    transition: all 0.5s ease;
+}
