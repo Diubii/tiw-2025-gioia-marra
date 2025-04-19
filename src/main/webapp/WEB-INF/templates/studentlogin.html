@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="it">
+    <head>
+        <title>Login studente</title>
+        <link rel="stylesheet" th:href="@{/static/css/common.css}">
+        <link rel="stylesheet" th:href="@{/static/css/student.css}">
+    </head>
+    <body>
+        <div class="container m">
+            <h1 class="fw-m">Area Studente</h1>
+            <form class="m" th:action="@{/student-login}" method="post">
+                <label for="studentNumber">Matricola</label>
+                <input class="xxs-h fs-m" type="text" name="studentNumber" id="studentNumber"/>
+
+                <label for="password">Password</label>
+                <input class="min-xxs xxs-h fs-m" type="password" name="password" id="password"/>
+
+                <button class="fs-l fw-m xs-h m-w btn-submit trans" type="submit" value="Login">Login</button>
+
+                <a th:href="@{/teacher-login}">Sei un docente?</a>
+            </form>
+        </div>
+    </body>
+</html>

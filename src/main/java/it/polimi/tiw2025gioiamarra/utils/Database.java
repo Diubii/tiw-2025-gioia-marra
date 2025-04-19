@@ -1,4 +1,4 @@
-package it.polimi.tiw2025gioiamarra;
+package it.polimi.tiw2025gioiamarra.utils;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

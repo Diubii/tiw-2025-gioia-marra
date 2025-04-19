@@ -15,6 +15,14 @@
     margin: 0;
     box-sizing: border-box;
     border: none;
+
+    font-family: "Roboto Serif", serif;
+    font-optical-sizing: auto;
+    font-weight: 100;
+    font-style: normal;
+    font-variation-settings:
+            "wdth" 100,
+            "GRAD" 0;
 }
 
 html, body{
@@ -50,13 +58,19 @@ a{
     text-decoration: none;
 }
 
+table, th, td{
+    border-collapse: collapse;
+    border: 1px solid;
+    padding: .3rem;
+    text-align: center;
+}
+
 .btn-submit{
     background-color: darkseagreen;
 }
 .btn-submit:hover{
     background-color: mediumseagreen;
 }
-
 
 .min-xxxs-h{
     min-height: .1rem;
@@ -176,23 +190,27 @@ a{
 }
 
 /*Font size*/
-.fs-s{
+.fs-s *{
     font-size: small;
 }
-.fs-m{
+.fs-m *{
     font-size: medium;
 }
-.fs-l{
+.fs-l *{
     font-size: large;
 }
+.fs-xl *{
+    font-size: larger;
+}
+
 /*Font weight*/
-.fw-s{
+.fw-s *{
     font-weight: lighter;
 }
-.fw-m{
+.fw-m *{
     font-weight: normal;
 }
-.fw-l{
+.fw-l *{
     font-weight: bold;
 }
 
