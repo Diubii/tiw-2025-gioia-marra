@@ -1,8 +1,8 @@
 package it.polimi.tiw2025gioiamarra.servlets;
 
 import it.polimi.tiw2025gioiamarra.items.Course;
-import it.polimi.tiw2025gioiamarra.servlets.utils.LoginType;
-import it.polimi.tiw2025gioiamarra.servlets.utils.ThymeleafUtils;
+import it.polimi.tiw2025gioiamarra.utils.LoginType;
+import it.polimi.tiw2025gioiamarra.utils.ThymeleafUtils;
 import it.polimi.tiw2025gioiamarra.utils.Database;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Comparator;
 
 @WebServlet(name = "coursesServlet", value = "/courses")
 public class CoursesServlet extends HttpServlet {
@@ -24,12 +25,7 @@ public class CoursesServlet extends HttpServlet {
         }
 
         Connection con = Database.getConnection();
-        String path = switch (session.getAttribute("type")) {
-            case LoginType.Student -> "/WEB-INF/templates/pure/student/courses.html";
-            case LoginType.Teacher -> "/WEB-INF/templates/pure/teacher/courses.html";
-            default -> throw new IllegalStateException("Unexpected value: " + session.getAttribute("type"));
-        };
-
+        String path = "/WEB-INF/templates/pure/courses.html";
         if (con != null) {
             ArrayList<Course> courses = new ArrayList<>();
             try {
@@ -71,6 +67,8 @@ public class CoursesServlet extends HttpServlet {
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
             }
+            courses.sort(Comparator.comparing(Course::getName).reversed()); //ORDER BY name DESC
+            request.setAttribute("type", session.getAttribute("type"));
             request.setAttribute("courses", courses);
             ThymeleafUtils.process(path, request, response, getServletContext());
         }

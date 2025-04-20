@@ -1,4 +1,4 @@
-package it.polimi.tiw2025gioiamarra.servlets.utils;
+package it.polimi.tiw2025gioiamarra.utils;
 
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;

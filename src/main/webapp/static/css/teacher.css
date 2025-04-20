@@ -1,7 +1,13 @@
 body{
     background-color: #DAC4F7;
+    gap: 1em;
 }
 
 table, th, td{
     background-color: #ECFEF6;
+}
+
+form{
+    background-color: #817693;
+    color: #ECFEF6;
 }

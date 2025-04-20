@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Valuta studente</title>
+    <link rel="stylesheet" th:href="@{static/css/common.css}" />
+    <link rel="stylesheet" th:href="@{static/css/teacher.css}" />
+</head>
+<body>
+    <form class="s-w fs-xl" action="grade-student" method="post">
+        <label for="studentNumber">Matricola</label>
+        <input type="text" id="studentNumber" th:value="${enrollment.getStudentNumber()}" disabled/>
+
+        <label for="studentFullName">Cognome e nome</label>
+        <input type="text" id="studentFullName" th:value="${enrollment.getStudentFullName()}" disabled/>
+
+        <label for="studentEmail">Email</label>
+        <input type="text" id="studentEmail" th:value="${enrollment.getStudentEmail()}" disabled/>
+
+        <label for="degreeCourse">Corso di laurea</label>
+        <input type="text" id="degreeCourse" th:value="${enrollment.getDegreeCourse()}" disabled/>
+
+        <label for="grade">Voto</label>
+        <select id="grade">
+            <option th:each="grade : ${grades}" th:value="${grade}" th:text="${grade}"></option>
+        </select>
+
+        <label for="gradingStatus">Stato valutazione</label>
+        <input type="text" id="gradingStatus" th:value="${enrollment.getGradingStatus()}" disabled/>
+
+        <input type="submit" value="Inserisci"/>
+    </form>
+</body>
+</html>

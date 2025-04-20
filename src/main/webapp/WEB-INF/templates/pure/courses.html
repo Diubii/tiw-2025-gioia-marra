@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="it" th:with="isStudent=${type.name()=='Student'}">
+<head>
+    <title th:text="${isStudent} ? 'Corsi studente' : 'Corsi docente'"></title>
+    <link rel="stylesheet" th:href="@{/static/css/common.css}" />
+    <link rel="stylesheet"  th:if="${isStudent}" th:href="@{/static/css/student.css}" />
+    <link rel="stylesheet"  th:unless="${isStudent}" th:href="@{/static/css/teacher.css}" />
+</head>
+<body>
+    <table class="m-w xs-h fs-xl">
+        <thead class="fw-m">
+            <tr>
+                <th th:text="${isStudent} ? 'I corsi che frequenti' : 'I corsi che insegni'"></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="course : ${courses}">
+                <td><a th:href="(${isStudent} ? '' : @{'/enrolled-students'}) + '?courseid=' + ${course.getID()}"  th:text=" '[' + ${course.getID()} + '] ' + ${course.getName()}"></a></td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

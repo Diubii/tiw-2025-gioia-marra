@@ -1,6 +1,6 @@
 package it.polimi.tiw2025gioiamarra.servlets;
 
-import it.polimi.tiw2025gioiamarra.servlets.utils.LoginType;
+import it.polimi.tiw2025gioiamarra.utils.LoginType;
 import it.polimi.tiw2025gioiamarra.utils.Database;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;

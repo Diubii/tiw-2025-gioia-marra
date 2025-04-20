@@ -18,7 +18,6 @@
 
     font-family: "Roboto Serif", serif;
     font-optical-sizing: auto;
-    font-weight: 100;
     font-style: normal;
     font-variation-settings:
             "wdth" 100,
@@ -34,6 +33,7 @@ body{
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-direction: column;
 }
 
 .container{
@@ -48,6 +48,15 @@ form{
     display: flex;
     flex-direction: column;
     gap: .3rem;
+    border-radius: .5em;
+    padding: 1em;
+    label{
+        font-weight: bold;
+    }
+
+    input{
+        width: 100%;
+    }
 }
 
 button{
@@ -70,6 +79,17 @@ table, th, td{
 }
 .btn-submit:hover{
     background-color: mediumseagreen;
+}
+
+.xxxxs-h{
+    height: 5%;
+}
+.xxxxs-w{
+    width: 5%;
+}
+.xxxxs{
+    height: 5%;
+    width: 5%;
 }
 
 .min-xxxs-h{

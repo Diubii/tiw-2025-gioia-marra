@@ -11,7 +11,7 @@ public class Course {
         //this.teacherId = teacherId;
     }
 
-    public int getId() {
+    public int getID() {
         return id;
     }
 
