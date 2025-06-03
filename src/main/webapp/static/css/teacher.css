@@ -11,3 +11,12 @@ form{
     background-color: #817693;
     color: #ECFEF6;
 }
+
+button{
+    background-color: #817693;
+    color: #E9EBEC;
+}
+
+button:hover{
+    background-color: #595265;
+}

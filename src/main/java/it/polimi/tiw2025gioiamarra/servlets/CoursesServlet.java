@@ -1,7 +1,7 @@
 package it.polimi.tiw2025gioiamarra.servlets;
 
 import it.polimi.tiw2025gioiamarra.items.Course;
-import it.polimi.tiw2025gioiamarra.utils.LoginType;
+import it.polimi.tiw2025gioiamarra.items.LoginType;
 import it.polimi.tiw2025gioiamarra.utils.ThymeleafUtils;
 import it.polimi.tiw2025gioiamarra.utils.Database;
 import jakarta.servlet.annotation.WebServlet;
@@ -23,7 +23,7 @@ public class CoursesServlet extends HttpServlet {
             response.sendRedirect("student-login");
             return;
         }
-
+        session.removeAttribute("course");
         Connection con = Database.getConnection();
         String path = "/WEB-INF/templates/pure/courses.html";
         if (con != null) {
@@ -52,7 +52,7 @@ public class CoursesServlet extends HttpServlet {
                         break;
                     case LoginType.Teacher:
                         ps = con.prepareStatement("SELECT * FROM corso WHERE codiceDocente = ?");
-                        ps.setInt(1, (Integer) session.getAttribute("teacherID"));
+                        ps.setInt(1, (Integer) session.getAttribute("teacher"));
                         rs = ps.executeQuery();
                         while (rs.next()) {
                             int courseID = rs.getInt("idCorso");

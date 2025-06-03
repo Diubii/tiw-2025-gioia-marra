@@ -1,6 +1,6 @@
 package it.polimi.tiw2025gioiamarra.servlets.student;
 
-import it.polimi.tiw2025gioiamarra.utils.LoginType;
+import it.polimi.tiw2025gioiamarra.items.LoginType;
 import it.polimi.tiw2025gioiamarra.utils.ThymeleafUtils;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;

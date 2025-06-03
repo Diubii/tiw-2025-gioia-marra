@@ -15,7 +15,7 @@
         </thead>
         <tbody>
             <tr th:each="course : ${courses}">
-                <td><a th:href="(${isStudent} ? '' : @{'/enrolled-students'}) + '?courseid=' + ${course.getID()}"  th:text=" '[' + ${course.getID()} + '] ' + ${course.getName()}"></a></td>
+                <td><a th:href="@{|exam-sessions?course=${course.getID()}|}"  th:text=" '[' + ${course.getID()} + '] ' + ${course.getName()}"></a></td>
             </tr>
         </tbody>
     </table>

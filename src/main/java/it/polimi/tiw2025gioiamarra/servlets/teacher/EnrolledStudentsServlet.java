@@ -29,7 +29,8 @@ public class EnrolledStudentsServlet extends HttpServlet {
         ArrayList<Enrollment> enrollments = new ArrayList<>();
         try {
             PreparedStatement ps = con.prepareStatement("SELECT matricola, cognome, nome, email, corsoLaurea, voto, statoValutazione, idVerbale, idAppello FROM esame NATURAL JOIN iscrizioneCorso NATURAL JOIN studente WHERE idCorso = ?");
-            ps.setInt(1, Integer.parseInt(request.getParameter("courseid")));
+            String courseID = request.getParameter("course");
+            ps.setInt(1, Integer.parseInt(courseID));
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 int studentNumber = Integer.parseInt(rs.getString("matricola"));
@@ -43,7 +44,7 @@ public class EnrolledStudentsServlet extends HttpServlet {
                 Enrollment enrollment = new Enrollment(studentNumber, studentFullName, studentEmail, degreeCourse, grade, gradingStatus, verbalID, examSession);
                 enrollments.add(enrollment);
             }
-        } catch (SQLException e) {
+        } catch (SQLException e) { //TODO: gestire eccezione
             throw new RuntimeException(e);
         }
         request.setAttribute("enrollments", enrollments);

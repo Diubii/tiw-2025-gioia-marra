@@ -1,6 +1,6 @@
 package it.polimi.tiw2025gioiamarra.servlets;
 
-import it.polimi.tiw2025gioiamarra.utils.LoginType;
+import it.polimi.tiw2025gioiamarra.items.LoginType;
 import it.polimi.tiw2025gioiamarra.utils.Database;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -47,7 +47,7 @@ public class LoginServlet extends HttpServlet {
                         break;
                     case LoginType.Teacher:
                         session.setAttribute("type", LoginType.Teacher);
-                        session.setAttribute("teacherID", rs.getInt("codiceDocente"));
+                        session.setAttribute("teacher", rs.getInt("codiceDocente"));
                         break;
                     default:
                         throw new IllegalStateException("Unexpected value: " + request.getAttribute("type"));

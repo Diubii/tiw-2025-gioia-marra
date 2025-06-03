@@ -57,10 +57,15 @@ form{
     input{
         width: 100%;
     }
+
+    input:not(.btn-submit){
+        margin-bottom: .5em;
+    }
 }
 
 button{
-    border-radius: 5px;
+    padding: .5em;
+    border-radius: .5em;
 }
 
 a{
@@ -80,6 +85,20 @@ table, th, td{
 .btn-submit:hover{
     background-color: mediumseagreen;
 }
+
+/* FLEX */
+.flex{
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    gap: .3em;
+}
+
+.flex-end{
+    align-self: flex-end;
+}
+
+/* END FLEX */
 
 .xxxxs-h{
     height: 5%;
@@ -124,14 +143,14 @@ table, th, td{
 }
 
 .min-xxs-h{
-    min-height: .15rem;
+    min-height: 15%;
 }
 .min-xxs-w{
-    min-width: .15rem;
+    min-width: 15%;
 }
 .min-xxs{
-    min-height: 1rem;
-    min-width: 1rem;
+    min-height: 15%;
+    min-width: 15%;
 }
 .xxs-h{
     height: 15%;
@@ -165,6 +184,16 @@ table, th, td{
     width: 20%;
 }
 
+.min-s-h{
+    min-height: 25%;
+}
+.min-s-w{
+    min-width: 25%;
+}
+.min-s{
+    min-height: 25%;
+    min-width: 25%;
+}
 .s-h{
     height: 25%;
 }
@@ -196,6 +225,17 @@ table, th, td{
 .l{
     height: 75%;
     width: 75%;
+}
+
+.min-full-h{
+    min-height: 100%;
+}
+.min-full-w{
+    min-width: 100%;
+}
+.min-full{
+    min-height: 100%;
+    min-width: 100%;
 }
 
 .full-h{
@@ -235,11 +275,11 @@ table, th, td{
 }
 
 .trans-fast{
-    transition: all 0.15s ease;
+    transition: background-color 0.15s ease;
 }
 .trans{
-    transition: all 0.3s ease;
+    transition: background-color 0.3s ease;
 }
 .trans-slow{
-    transition: all 0.5s ease;
+    transition: background-color 0.5s ease;
 }

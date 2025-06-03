@@ -1,4 +1,4 @@
-package it.polimi.tiw2025gioiamarra.utils;
+package it.polimi.tiw2025gioiamarra.items;
 
 public enum LoginType {
     Student, Teacher
