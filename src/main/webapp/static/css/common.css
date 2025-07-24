@@ -36,6 +36,10 @@ body{
     flex-direction: column;
 }
 
+input{
+    outline: none;
+}
+
 .container{
     display: flex;
     align-items: center;
@@ -72,11 +76,22 @@ a{
     text-decoration: none;
 }
 
+a.button{
+    padding: .5em;
+    border-radius: .5em;
+}
+
+.button:hover {
+    cursor: pointer;
+}
+
 table, th, td{
     border-collapse: collapse;
     border: 1px solid;
     padding: .3rem;
     text-align: center;
+    width: min-content;
+    white-space: nowrap;
 }
 
 .btn-submit{

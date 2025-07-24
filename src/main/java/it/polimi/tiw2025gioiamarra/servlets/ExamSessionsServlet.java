@@ -1,0 +1,67 @@
+package it.polimi.tiw2025gioiamarra.servlets;
+
+import it.polimi.tiw2025gioiamarra.items.Course;
+import it.polimi.tiw2025gioiamarra.items.ExamSession;
+import it.polimi.tiw2025gioiamarra.utils.Database;
+import it.polimi.tiw2025gioiamarra.utils.ThymeleafUtils;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+
+@WebServlet(name = "examSessionsServlet", value = "/exam-sessions")
+public class ExamSessionsServlet extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        HttpSession session = request.getSession();
+        if((session.getAttribute("teacher") == null && session.getAttribute("student") == null) || session.getAttribute("type") == null ||  request.getParameter("course") == null) {
+            response.sendRedirect("courses");
+            return;
+        }
+
+        Connection con = Database.getConnection();
+        PreparedStatement ps;
+        ResultSet rs;
+        ArrayList<ExamSession> examSessions = new ArrayList<>();
+        Course course;
+        try {
+            ps = con.prepareStatement("SELECT * FROM corso WHERE idCorso = ?");
+            ps.setInt(1, Integer.parseInt(request.getParameter("course")));
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                course = new Course(rs.getInt("idCorso"), rs.getString("nome"));
+                request.setAttribute("course", course);
+            }
+            else{
+                response.sendRedirect("courses");
+                return;
+            }
+
+            ps = con.prepareStatement("SELECT * FROM appello WHERE idCorso = ?");
+            ps.setInt(1, Integer.parseInt(request.getParameter("course")));
+            rs = ps.executeQuery();
+            while(rs.next()){
+                ExamSession examSession = new ExamSession(rs.getInt("idAppello"), course, rs.getDate("dataOra"));
+                examSessions.add(examSession);
+            }
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+            response.sendRedirect("courses");
+            return;
+        }
+
+        request.setAttribute("type", session.getAttribute("type"));
+        request.setAttribute("course", course);
+        request.setAttribute("examSessions", examSessions);
+        //System.out.println(examSessions);
+        ThymeleafUtils.process("/WEB-INF/templates/pure/examsessions.html", request, response, getServletContext());
+    }
+}

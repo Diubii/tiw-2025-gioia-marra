@@ -19,13 +19,13 @@ import java.util.Comparator;
 public class CoursesServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession();
-        if (session.getAttribute("type") == null) {
+        if (session.getAttribute("type") == null || (session.getAttribute("teacher") == null && session.getAttribute("student") == null)) {
             response.sendRedirect("student-login");
             return;
         }
         session.removeAttribute("course");
+
         Connection con = Database.getConnection();
-        String path = "/WEB-INF/templates/pure/courses.html";
         if (con != null) {
             ArrayList<Course> courses = new ArrayList<>();
             try {
@@ -66,11 +66,12 @@ public class CoursesServlet extends HttpServlet {
                 }
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
+                response.sendRedirect("student-login");
             }
-            courses.sort(Comparator.comparing(Course::getName).reversed()); //ORDER BY name DESC
+            courses.sort(Comparator.comparing(Course::name).reversed()); //ORDER BY name DESC //TODO: Sortare in SQL
             request.setAttribute("type", session.getAttribute("type"));
             request.setAttribute("courses", courses);
-            ThymeleafUtils.process(path, request, response, getServletContext());
+            ThymeleafUtils.process("/WEB-INF/templates/pure/courses.html", request, response, getServletContext());
         }
     }
 }

@@ -2,6 +2,7 @@ package it.polimi.tiw2025gioiamarra.servlets.teacher;
 
 import it.polimi.tiw2025gioiamarra.items.Enrollment;
 import it.polimi.tiw2025gioiamarra.items.GradingStatus;
+import it.polimi.tiw2025gioiamarra.items.Student;
 import it.polimi.tiw2025gioiamarra.utils.Database;
 import it.polimi.tiw2025gioiamarra.utils.ThymeleafUtils;
 import jakarta.servlet.annotation.WebServlet;
@@ -20,7 +21,7 @@ import java.util.Objects;
 public class GradeStudentServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession();
-        if(request.getParameter("student") == null || request.getParameter("exam") == null || session.getAttribute("teacher") == null) {
+        if(request.getParameter("student") == null || request.getParameter("course") == null || request.getParameter("session") == null || session.getAttribute("teacher") == null) {
             response.sendRedirect("courses");
             return;
         }
@@ -28,25 +29,29 @@ public class GradeStudentServlet extends HttpServlet {
         Connection con = Database.getConnection();
         if(con == null) { return; }
         try {
-            PreparedStatement ps = con.prepareStatement("SELECT matricola, cognome, studente.nome, email, corsoLaurea, voto, statoValutazione, idAppello FROM esame NATURAL JOIN iscrizioneCorso NATURAL JOIN studente JOIN corso ON iscrizioneCorso.idCorso=corso.idCorso WHERE studente.matricola = ? AND idAppello = ? AND codiceDocente = ?");
+            PreparedStatement ps = con.prepareStatement("SELECT matricola, cognome, studente.nome, email, corsoLaurea, voto, statoValutazione, idAppello FROM esame NATURAL JOIN iscrizioneCorso NATURAL JOIN studente JOIN corso on iscrizioneCorso.idCorso = corso.idCorso WHERE studente.matricola = ? AND corso.idCorso = ? AND idAppello = ? AND codiceDocente = ?");
             int studentNumber = Integer.parseInt(request.getParameter("student"));
-            int examSession = Integer.parseInt(request.getParameter("exam"));
+            int courseID = Integer.parseInt(request.getParameter("course"));
+            int examSessionID = Integer.parseInt(request.getParameter("session"));
             int teacherID = (Integer) session.getAttribute("teacher");
             ps.setInt(1, studentNumber);
-            ps.setInt(2, examSession);
-            ps.setInt(3, teacherID);
+            ps.setInt(2, courseID);
+            ps.setInt(3, examSessionID);
+            ps.setInt(4, teacherID);
             ResultSet rs = ps.executeQuery();
             Enrollment enrollment;
             if(rs.next()) {
-                String studentFullName = rs.getString("nome") + " " + rs.getString("cognome");
+                String studentName = rs.getString("nome");
+                String studentSurname = rs.getString("cognome");
                 String studentEmail = rs.getString("email");
                 String degreeCourse = rs.getString("corsoLaurea");
                 String grade = rs.getString("voto");
-                String gradingStatus = rs.getString("statoValutazione");
-                enrollment = new Enrollment(studentNumber, studentFullName, studentEmail, degreeCourse, grade, gradingStatus, null, examSession);
+                GradingStatus gradingStatus = GradingStatus.valueOf(rs.getString("statoValutazione"));
+                Student student = new Student(studentNumber, studentName, studentSurname, studentEmail, degreeCourse);
+                enrollment = new Enrollment(student, grade, gradingStatus, null, courseID, examSessionID);
                 request.setAttribute("enrollment", enrollment);
 
-                session.setAttribute("examSession", examSession);
+                session.setAttribute("examSession", examSessionID);
 
                 //Get enum values to show in the select tag
                 ps = con.prepareStatement("SELECT SUBSTRING(COLUMN_TYPE,5) " +
@@ -77,8 +82,8 @@ public class GradeStudentServlet extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession();
-        if(session.getAttribute("teacher") == null) {
-            response.sendRedirect("courses");
+        if(session.getAttribute("type") == null ||session.getAttribute("teacher") == null) {
+            response.sendRedirect("teacher-login");
             return;
         }
 
@@ -92,8 +97,8 @@ public class GradeStudentServlet extends HttpServlet {
             ps.setString(1, grade);
 
             //Se il voto è "Vuoto" lo stato diventa "Non inserito", altrimenti "Inserito"
-            if(!grade.equals("Vuoto")) ps.setString(2, GradingStatus.Inserted.toString());
-            else ps.setString(2, GradingStatus.NotInserted.toString());
+            if(!grade.equals("Vuoto")) ps.setString(2, GradingStatus.Inserted.name());
+            else ps.setString(2, GradingStatus.NotInserted.name());
 
             ps.setInt(3, (Integer) session.getAttribute("student"));
             ps.setInt(4, examSession);
@@ -105,7 +110,7 @@ public class GradeStudentServlet extends HttpServlet {
             ResultSet rs=ps.executeQuery();
 
             if(rs.next()){
-                response.sendRedirect("enrolled-students?course=" + rs.getString("idCorso"));
+                response.sendRedirect("enrolled-students?course=" + rs.getString("idCorso") + "&session=" + examSession);
             }
             else{
                 response.sendRedirect("courses");

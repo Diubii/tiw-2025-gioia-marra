@@ -21,7 +21,7 @@ public class Database {
 
         try{
             connection = DriverManager.getConnection("jdbc:mariadb://" + url + ":" + port + "/" + db, user, psw);
-            System.out.println("Connection established!");
+            //System.out.println("Connection established!");
         } catch (Exception e){
             System.err.println(e.getMessage());
         }

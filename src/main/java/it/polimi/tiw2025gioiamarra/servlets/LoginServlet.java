@@ -43,7 +43,7 @@ public class LoginServlet extends HttpServlet {
                 switch (request.getAttribute("type")) {
                     case LoginType.Student:
                         session.setAttribute("type", LoginType.Student);
-                        session.setAttribute("studentNumber", rs.getInt("matricola"));
+                        session.setAttribute("student", rs.getInt("matricola"));
                         break;
                     case LoginType.Teacher:
                         session.setAttribute("type", LoginType.Teacher);

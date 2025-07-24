@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="it" th:with="isStudent=${type.name()=='Student'}">
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Appelli d'esame</title>
+      <link rel="stylesheet" th:href="@{/static/css/common.css}" />
+      <link rel="stylesheet"  th:if="${isStudent}" th:href="@{/static/css/student.css}" />
+      <link rel="stylesheet"  th:unless="${isStudent}" th:href="@{/static/css/teacher.css}" />
+  </head>
+  <body>
+    <h1 class="fs-xl fw-l" th:text="'Appelli d\'esame del corso: ' + ${course.name()}"></h1>
+    <table class="m-w xs-h fs-xl">
+      <thead class="fw-m">
+          <tr>
+            <th>Date</th>
+          </tr>
+      </thead>
+      <tbody>
+          <tr th:each="examSession : ${examSessions}">
+            <td><a th:href="(${isStudent} ? @{'/results'} : @{'/enrolled-students'}) + '?course=' + ${course.id()} + '&session=' + ${examSession.id()}"  th:text="${examSession.dateTime()}"></a></td>
+          </tr>
+      </tbody>
+    </table>
+  </body>
+</html>

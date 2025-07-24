@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="it" th:with="isStudent=${type.name()=='Student'}">
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${isStudent} ? 'Corsi studente' : 'Corsi docente'"></title>
     <link rel="stylesheet" th:href="@{/static/css/common.css}" />
     <link rel="stylesheet"  th:if="${isStudent}" th:href="@{/static/css/student.css}" />
@@ -15,7 +16,7 @@
         </thead>
         <tbody>
             <tr th:each="course : ${courses}">
-                <td><a th:href="@{|exam-sessions?course=${course.getID()}|}"  th:text=" '[' + ${course.getID()} + '] ' + ${course.getName()}"></a></td>
+                <td><a th:href="@{|exam-sessions?course=${course.id()}|}"  th:text=" '[' + ${course.id()} + '] ' + ${course.name()}"></a></td>
             </tr>
         </tbody>
     </table>

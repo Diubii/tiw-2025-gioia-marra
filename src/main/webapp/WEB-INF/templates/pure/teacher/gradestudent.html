@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Valuta studente</title>
     <link rel="stylesheet" th:href="@{static/css/common.css}" />
     <link rel="stylesheet" th:href="@{static/css/teacher.css}" />
@@ -9,16 +10,16 @@
 <body>
     <form class="s-w fs-xl" action="grade-student" method="post">
         <label for="studentNumber">Matricola</label>
-        <input type="text" id="studentNumber" th:value="${enrollment.getStudentNumber()}" disabled/>
+        <input type="text" id="studentNumber" th:value="${enrollment.student().id()}" disabled/>
 
         <label for="studentFullName">Cognome e nome</label>
-        <input type="text" id="studentFullName" th:value="${enrollment.getStudentFullName()}" disabled/>
+        <input type="text" id="studentFullName" th:value="|${enrollment.student().name()} ${enrollment.student().surname()}|" disabled/>
 
         <label for="studentEmail">Email</label>
-        <input type="text" id="studentEmail" th:value="${enrollment.getStudentEmail()}" disabled/>
+        <input type="text" id="studentEmail" th:value="${enrollment.student().email()}" disabled/>
 
         <label for="degreeCourse">Corso di laurea</label>
-        <input type="text" id="degreeCourse" th:value="${enrollment.getDegreeCourse()}" disabled/>
+        <input type="text" id="degreeCourse" th:value="${enrollment.student().degreeCourse()}" disabled/>
 
         <label for="grade">Voto</label>
         <select name="grade" id="grade">
@@ -26,7 +27,7 @@
         </select>
 
         <label for="gradingStatus">Stato valutazione</label>
-        <input type="text" id="gradingStatus" th:value="${enrollment.getGradingStatus()}" disabled/>
+        <input type="text" id="gradingStatus" th:value="${enrollment.gradingStatus().toString()}" disabled/>
 
         <input class="btn-submit trans" type="submit" value="Valuta studente"/>
     </form>

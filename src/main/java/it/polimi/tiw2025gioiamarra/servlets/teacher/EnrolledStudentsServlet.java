@@ -1,6 +1,9 @@
 package it.polimi.tiw2025gioiamarra.servlets.teacher;
 
 import it.polimi.tiw2025gioiamarra.items.Enrollment;
+import it.polimi.tiw2025gioiamarra.items.ExamSession;
+import it.polimi.tiw2025gioiamarra.items.GradingStatus;
+import it.polimi.tiw2025gioiamarra.items.Student;
 import it.polimi.tiw2025gioiamarra.utils.Database;
 import it.polimi.tiw2025gioiamarra.utils.ThymeleafUtils;
 import jakarta.servlet.annotation.WebServlet;
@@ -16,11 +19,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import org.thymeleaf.context.Context;
+
 @WebServlet(name="enrolledStudentsServlet", value="/enrolled-students")
 public class EnrolledStudentsServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession();
-        if (session.getAttribute("type") == null) {
+        if (session.getAttribute("type") == null || session.getAttribute("teacher") == null) {
             response.sendRedirect("teacher-login");
             return;
         }
@@ -28,26 +33,32 @@ public class EnrolledStudentsServlet extends HttpServlet {
         Connection con = Database.getConnection();
         ArrayList<Enrollment> enrollments = new ArrayList<>();
         try {
-            PreparedStatement ps = con.prepareStatement("SELECT matricola, cognome, nome, email, corsoLaurea, voto, statoValutazione, idVerbale, idAppello FROM esame NATURAL JOIN iscrizioneCorso NATURAL JOIN studente WHERE idCorso = ?");
-            String courseID = request.getParameter("course");
-            ps.setInt(1, Integer.parseInt(courseID));
+            PreparedStatement ps = con.prepareStatement("SELECT matricola, cognome, nome, email, corsoLaurea, voto, statoValutazione, idVerbale, idAppello FROM esame NATURAL JOIN iscrizioneCorso NATURAL JOIN studente WHERE idCorso = ? && idAppello = ?");
+            int courseID = Integer.parseInt(request.getParameter("course"));
+            int sessionID = Integer.parseInt(request.getParameter("session"));
+            ps.setInt(1, courseID);
+            ps.setInt(2, sessionID);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 int studentNumber = Integer.parseInt(rs.getString("matricola"));
-                String studentFullName = rs.getString("cognome") + " " + rs.getString("nome");
+                String studentName =  rs.getString("nome");
+                String studentSurname = rs.getString("cognome");
                 String studentEmail = rs.getString("email");
                 String degreeCourse = rs.getString("corsoLaurea");
                 String grade = rs.getString("voto");
-                String gradingStatus = rs.getString("statoValutazione");
+                GradingStatus gradingStatus = GradingStatus.valueOf(rs.getString("statoValutazione"));
                 String verbalID = rs.getString("idVerbale");
-                int examSession = rs.getInt("idAppello");
-                Enrollment enrollment = new Enrollment(studentNumber, studentFullName, studentEmail, degreeCourse, grade, gradingStatus, verbalID, examSession);
+                Student student = new Student(studentNumber, studentName, studentSurname, studentEmail, degreeCourse);
+                Enrollment enrollment = new Enrollment(student, grade, gradingStatus, verbalID, courseID, sessionID);
+                //System.out.println(enrollment);
                 enrollments.add(enrollment);
             }
         } catch (SQLException e) { //TODO: gestire eccezione
             throw new RuntimeException(e);
         }
+
         request.setAttribute("enrollments", enrollments);
+        request.setAttribute("GradingStatus", GradingStatus.class);
         ThymeleafUtils.process("WEB-INF/templates/pure/teacher/enrolledstudents.html", request, response, getServletContext());
     }
 }

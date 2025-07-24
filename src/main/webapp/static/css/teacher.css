@@ -12,11 +12,11 @@ form{
     color: #ECFEF6;
 }
 
-button{
+a.button{
     background-color: #817693;
     color: #E9EBEC;
 }
 
-button:hover{
+a.button:hover{
     background-color: #595265;
 }
