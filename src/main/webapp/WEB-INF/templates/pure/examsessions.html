@@ -19,8 +19,12 @@
       <tbody>
           <tr th:each="examSession : ${examSessions}">
             <td>
-                <a th:href="(${isStudent} ? @{'/ExamResult'} : @{'/enrolled-students'}) + '?course=' + ${course.id()} + '&session=' + ${examSession.id()}+ '&sort=matricola&order=asc'}"  th:text="${examSession.dateTime()}"></a>
-                <img style="width: 1em; height: 1em;"  th:src="@{ ${examSession.enrolled()} ? 'static/svg/tick.svg' : 'static/svg/minus.svg'}" />
+               <!-- <a th:href="(${isStudent} ? @{'/ExamResult'} : @{'/enrolled-students'}) + '?course=' + ${course.id()} + '&session=' + ${examSession.id()}+ '&sort=matricola&order=asc'}"  th:text="${examSession.dateTime()}"></a>
+                <img style="width: 1em; height: 1em;"  th:src="@{ ${examSession.enrolled()} ? 'static/svg/tick.svg' : 'static/svg/minus.svg'}" /> -->
+                <a th:href="@{${isStudent} ? '/ExamResult(course=${course.id()},session=${examSession.id()},sort='matricola',order='asc')' : '/enrolled-students(course=${course.id()},session=${examSession.id()},sort='matricola',order='asc')'}"
+                   th:text="${examSession.dateTime()}"></a>
+                <img style="width: 1em; height: 1em;"
+                     th:src="@{${examSession.enrolled()} ? 'static/svg/tick.svg' : 'static/svg/minus.svg'}" />
             </td>
           </tr>
       </tbody>
