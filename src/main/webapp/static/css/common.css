@@ -96,9 +96,20 @@ table, th, td{
 
 .btn-submit{
     background-color: darkseagreen;
+
 }
 .btn-submit:hover{
     background-color: mediumseagreen;
+
+}
+
+.btn-cancel{
+    background-color: darkred;
+    color: white;
+}
+.btn-cancel:hover{
+    background-color: brown;
+    color: white;
 }
 
 /* FLEX */

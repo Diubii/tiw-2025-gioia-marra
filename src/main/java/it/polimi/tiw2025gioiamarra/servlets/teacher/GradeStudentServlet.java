@@ -19,6 +19,7 @@ import java.util.Objects;
 
 @WebServlet(name="gradeStudentServlet", value = "/grade-student")
 public class GradeStudentServlet extends HttpServlet {
+
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession();
         if(request.getParameter("student") == null || request.getParameter("course") == null || request.getParameter("session") == null || session.getAttribute("teacher") == null) {
@@ -110,7 +111,7 @@ public class GradeStudentServlet extends HttpServlet {
             ResultSet rs=ps.executeQuery();
 
             if(rs.next()){
-                response.sendRedirect("enrolled-students?course=" + rs.getString("idCorso") + "&session=" + examSession);
+                response.sendRedirect("enrolled-students?course=" + rs.getString("idCorso") + "&session=" + examSession+"&sort=matricola&order=asc");
             }
             else{
                 response.sendRedirect("courses");

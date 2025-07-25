@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valuta studente</title>
+    <link rel="stylesheet" th:href="@{static/css/common.css}" />
+    <link rel="stylesheet" th:href="@{static/css/student.css}" />
+</head>
+<body>
+<!-- tutta form thif lo stato è pubblicato o rifiutato-->
+<form class="s-w fs-xl" action="RejectResult" method="post">
+    <label for="studentNumber">Matricola</label>
+    <input type="text" id="studentNumber" th:value="prova" disabled/>
+
+    <!--<label for="studentFullName">Cognome e nome</label>
+    <input type="text" id="studentFullName" th:value="|${enrollment.student().name()} ${enrollment.student().surname()}|" disabled/>
+
+    <label for="studentEmail">Email</label>
+    <input type="text" id="studentEmail" th:value="${enrollment.student().email()}" disabled/>
+
+    <label for="degreeCourse">Corso di laurea</label>
+    <input type="text" id="degreeCourse" th:value="${enrollment.student().degreeCourse()}" disabled/>
+
+    <label for="grade">Voto</label>
+    <select name="grade" id="grade">
+        <option th:each="grade : ${grades}" th:value="${grade}" th:text="${grade}" name="grade"></option>
+    </select>
+
+    <label for="gradingStatus">Stato valutazione</label>
+    <input type="text" id="gradingStatus" th:value="${enrollment.gradingStatus().toString()}" disabled/>-->
+
+    <!-- thiif se non già rifiutato e se range voto -->
+    <input class="btn-cancel trans" type="submit" value="Rifiuta"/>
+</form>
+</body>
+</html>

@@ -14,6 +14,9 @@ import java.io.IOException;
 @WebServlet(name="studentLoginServlet", value="/student-login")
 public class StudentLoginServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        if(request.getParameter("error") != null) {
+            request.setAttribute("error", true);
+        }
         ThymeleafUtils.process("WEB-INF/templates/studentlogin.html", request, response, getServletContext());
     }
 

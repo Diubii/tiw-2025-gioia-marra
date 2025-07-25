@@ -2,6 +2,7 @@ package it.polimi.tiw2025gioiamarra.servlets;
 
 import it.polimi.tiw2025gioiamarra.items.Course;
 import it.polimi.tiw2025gioiamarra.items.ExamSession;
+import it.polimi.tiw2025gioiamarra.items.LoginType;
 import it.polimi.tiw2025gioiamarra.utils.Database;
 import it.polimi.tiw2025gioiamarra.utils.ThymeleafUtils;
 import jakarta.servlet.annotation.WebServlet;
@@ -31,6 +32,7 @@ public class ExamSessionsServlet extends HttpServlet {
         PreparedStatement ps;
         ResultSet rs;
         ArrayList<ExamSession> examSessions = new ArrayList<>();
+        ArrayList<Integer> appelliIscritto = new ArrayList<Integer>();
         Course course;
         try {
             ps = con.prepareStatement("SELECT * FROM corso WHERE idCorso = ?");
@@ -45,11 +47,20 @@ public class ExamSessionsServlet extends HttpServlet {
                 return;
             }
 
-            ps = con.prepareStatement("SELECT * FROM appello WHERE idCorso = ?");
+            //preparare tab exam di questo studente e metto enrolled solo se anche li
+            int matricola = (Integer)session.getAttribute("student");
+            ps = con.prepareStatement("SELECT idAppello FROM esame WHERE matricola = ?");
+            ps.setInt(1, matricola);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                appelliIscritto.add(rs.getInt("idAppello"));
+            }
+
+            ps = con.prepareStatement("SELECT * FROM appello WHERE idCorso = ? ORDER BY dataOra DESC");
             ps.setInt(1, Integer.parseInt(request.getParameter("course")));
             rs = ps.executeQuery();
             while(rs.next()){
-                ExamSession examSession = new ExamSession(rs.getInt("idAppello"), course, rs.getDate("dataOra"));
+                ExamSession examSession = new ExamSession(rs.getInt("idAppello"), course, rs.getDate("dataOra"), appelliIscritto.contains(rs.getInt("idAppello")));
                 examSessions.add(examSession);
             }
         } catch (SQLException e) {

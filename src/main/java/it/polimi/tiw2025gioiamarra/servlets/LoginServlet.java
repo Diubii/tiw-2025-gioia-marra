@@ -2,6 +2,8 @@ package it.polimi.tiw2025gioiamarra.servlets;
 
 import it.polimi.tiw2025gioiamarra.items.LoginType;
 import it.polimi.tiw2025gioiamarra.utils.Database;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,7 +16,7 @@ import java.sql.*;
 @WebServlet(name = "loginServlet", value = "/login")
 public class LoginServlet extends HttpServlet {
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         Connection con = Database.getConnection();
         if (con == null) {
             System.err.println("Couldn't establish a connection to the database.");
@@ -26,11 +28,19 @@ public class LoginServlet extends HttpServlet {
             switch (request.getAttribute("type")) {
                 case LoginType.Student:
                     ps = con.prepareStatement("SELECT * FROM studente where matricola=? and pass=?");
-                    ps.setInt(1, Integer.parseInt(request.getParameter("studentNumber")));
+                    try{
+                        ps.setInt(1, Integer.parseInt(request.getParameter("studentNumber")));
+                    }catch (Exception e){
+                        response.sendRedirect("student-login?error=1");
+                    }
                     break;
                 case LoginType.Teacher:
                     ps = con.prepareStatement("SELECT * FROM docente where codiceDocente=? and pass=?");
-                    ps.setInt(1, Integer.parseInt(request.getParameter("teacherID")));
+                    try{
+                        ps.setInt(1, Integer.parseInt(request.getParameter("teacherID")));
+                    } catch (Exception e) {
+                        response.sendRedirect("teacher-login?error=1");
+                    }
                     break;
                 default:
                     throw new IllegalStateException("Unexpected value: " + request.getAttribute("type"));
@@ -54,7 +64,20 @@ public class LoginServlet extends HttpServlet {
                 }
                 response.sendRedirect("courses");
             }
-            //TODO: Gestire caso login errato
+            else{
+
+                switch (request.getAttribute("type")){
+                    case LoginType.Student:
+                        response.sendRedirect("student-login?error=1");
+                        break;
+                    case LoginType.Teacher:
+                        response.sendRedirect("teacher-login?error=1");
+                        break;
+                    default:
+                        throw new IllegalStateException("Unexpected value: " + request.getAttribute("type"));
+                }
+
+            }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }

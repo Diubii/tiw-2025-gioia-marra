@@ -33,25 +33,17 @@ public class CoursesServlet extends HttpServlet {
                 ResultSet rs;
                 switch (session.getAttribute("type")) {
                     case LoginType.Student:
-                        ps = con.prepareStatement("SELECT * FROM iscrizioneCorso WHERE matricola = ?");
-                        ps.setInt(1, (Integer) session.getAttribute("studentNumber"));
+                        ps = con.prepareStatement("SELECT corso.idCorso,nome FROM iscrizioneCorso JOIN corso ON iscrizioneCorso.idCorso = corso.idCorso WHERE iscrizioneCorso.matricola = ? ORDER BY nome DESC");
+                        ps.setInt(1, (Integer) session.getAttribute("student"));
                         rs = ps.executeQuery();
-                        ArrayList<Integer> courseIDs = new ArrayList<>();
                         while (rs.next()) {
-                            courseIDs.add(rs.getInt("idCorso"));
-                        }
-                        ps = con.prepareStatement("SELECT * FROM corso WHERE idCorso = ?");
-                        for(Integer courseID : courseIDs) {
-                            ps.setInt(1, courseID);
-                            rs = ps.executeQuery();
-                            while (rs.next()) {
-                                String name = rs.getString("nome");
-                                courses.add(new Course(courseID, name));
-                            }
+                            int id = rs.getInt("idCorso");
+                            String name = rs.getString("nome");
+                            courses.add(new Course(id, name));
                         }
                         break;
                     case LoginType.Teacher:
-                        ps = con.prepareStatement("SELECT * FROM corso WHERE codiceDocente = ?");
+                        ps = con.prepareStatement("SELECT * FROM corso WHERE codiceDocente = ? ORDER BY nome DESC");
                         ps.setInt(1, (Integer) session.getAttribute("teacher"));
                         rs = ps.executeQuery();
                         while (rs.next()) {
@@ -68,7 +60,7 @@ public class CoursesServlet extends HttpServlet {
                 System.out.println(e.getMessage());
                 response.sendRedirect("student-login");
             }
-            courses.sort(Comparator.comparing(Course::name).reversed()); //ORDER BY name DESC //TODO: Sortare in SQL
+            //courses.sort(Comparator.comparing(Course::name).reversed()); //ORDER BY name DESC //TODO: Sortare in SQL
             request.setAttribute("type", session.getAttribute("type"));
             request.setAttribute("courses", courses);
             ThymeleafUtils.process("/WEB-INF/templates/pure/courses.html", request, response, getServletContext());

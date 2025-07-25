@@ -18,6 +18,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.thymeleaf.context.Context;
 
@@ -32,8 +34,30 @@ public class EnrolledStudentsServlet extends HttpServlet {
 
         Connection con = Database.getConnection();
         ArrayList<Enrollment> enrollments = new ArrayList<>();
+
+        //Handling order by selected column
+        String sort = request.getParameter("sort");
+        Map<String, String> validSortFields = new HashMap<>();
+        validSortFields.put("matricola", "matricola");
+        validSortFields.put("cognome", "cognome");
+        validSortFields.put("email", "email");
+        validSortFields.put("corsoLaurea", "corsoLaurea");
+        validSortFields.put("voto", "voto");
+        validSortFields.put("statoValutazione", "statoValutazione");
+        validSortFields.put("idVerbale", "idVerbale");
+        String orderBy = validSortFields.getOrDefault(sort, "matricola"); // default
+
+        String order = request.getParameter("order");
+        String sortDirection = "ASC";
+        if ("desc".equalsIgnoreCase(order)) {
+            sortDirection = "DESC";
+        }
+
         try {
-            PreparedStatement ps = con.prepareStatement("SELECT matricola, cognome, nome, email, corsoLaurea, voto, statoValutazione, idVerbale, idAppello FROM esame NATURAL JOIN iscrizioneCorso NATURAL JOIN studente WHERE idCorso = ? && idAppello = ?");
+
+            PreparedStatement ps = con.prepareStatement("SELECT matricola, cognome, nome, email, corsoLaurea, voto, statoValutazione, idVerbale, idAppello FROM esame NATURAL JOIN iscrizioneCorso NATURAL JOIN studente WHERE idCorso = ? && idAppello = ? ORDER BY "+orderBy+" "+sortDirection);
+            //Todo regolare ordine in base a parametri?
+            //System.out.println("Eseguo la query: " + ps.toString());
             int courseID = Integer.parseInt(request.getParameter("course"));
             int sessionID = Integer.parseInt(request.getParameter("session"));
             ps.setInt(1, courseID);
