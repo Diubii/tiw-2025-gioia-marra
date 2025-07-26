@@ -48,19 +48,29 @@ public class ExamSessionsServlet extends HttpServlet {
             }
 
             //preparare tab exam di questo studente e metto enrolled solo se anche li
-            int matricola = (Integer)session.getAttribute("student");
-            ps = con.prepareStatement("SELECT idAppello FROM esame WHERE matricola = ?");
-            ps.setInt(1, matricola);
-            rs = ps.executeQuery();
-            while (rs.next()) {
-                appelliIscritto.add(rs.getInt("idAppello"));
+            if(session.getAttribute("type").equals(LoginType.Student)) {
+                int matricola = (Integer)session.getAttribute("student");
+                ps = con.prepareStatement("SELECT idAppello FROM esame WHERE matricola = ?");
+                ps.setInt(1, matricola);
+                rs = ps.executeQuery();
+                while (rs.next()) {
+                    appelliIscritto.add(rs.getInt("idAppello"));
+                }
             }
+
 
             ps = con.prepareStatement("SELECT * FROM appello WHERE idCorso = ? ORDER BY dataOra DESC");
             ps.setInt(1, Integer.parseInt(request.getParameter("course")));
             rs = ps.executeQuery();
+            Boolean enrolled = false;
             while(rs.next()){
-                ExamSession examSession = new ExamSession(rs.getInt("idAppello"), course, rs.getDate("dataOra"), appelliIscritto.contains(rs.getInt("idAppello")));
+                if(session.getAttribute("type").equals(LoginType.Student)){
+                    enrolled = appelliIscritto.contains(rs.getInt("idAppello"));
+                }
+                else{
+                    enrolled= true;
+                }
+                ExamSession examSession = new ExamSession(rs.getInt("idAppello"), course, rs.getDate("dataOra"),enrolled );
                 examSessions.add(examSession);
             }
         } catch (SQLException e) {
