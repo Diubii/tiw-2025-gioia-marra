@@ -15,10 +15,8 @@ import java.util.ArrayList;
 
 public class ThymeleafUtils {
     public static TemplateEngine getTemplateEngine(WebApplicationTemplateResolver templateResolver) {
-        templateResolver.setTemplateMode(TemplateMode.HTML);
         TemplateEngine templateEngine = new TemplateEngine();
         templateEngine.setTemplateResolver(templateResolver);
-        templateResolver.setSuffix(".html");
         return templateEngine;
     }
 
@@ -27,7 +25,12 @@ public class ThymeleafUtils {
     }
 
     public static WebApplicationTemplateResolver getTemplateResolver(JakartaServletWebApplication webApplication) {
-        return new WebApplicationTemplateResolver(webApplication);
+        WebApplicationTemplateResolver templateResolver = new WebApplicationTemplateResolver(webApplication);
+        templateResolver.setPrefix("/WEB-INF/templates/");
+        templateResolver.setSuffix(".html");
+        templateResolver.setTemplateMode("HTML");
+        templateResolver.setCharacterEncoding("UTF-8");
+        return templateResolver;
     }
 
     public static void process(String path, HttpServletRequest request, HttpServletResponse response, ServletContext servletContext) throws IOException {

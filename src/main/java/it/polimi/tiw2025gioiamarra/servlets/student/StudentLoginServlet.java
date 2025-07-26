@@ -17,7 +17,8 @@ public class StudentLoginServlet extends HttpServlet {
         if(request.getParameter("error") != null) {
             request.setAttribute("error", true);
         }
-        ThymeleafUtils.process("WEB-INF/templates/studentlogin.html", request, response, getServletContext());
+        //Prefisso /WEB-INF/templates/ e suffisso .html
+        ThymeleafUtils.process("studentlogin", request, response, getServletContext());
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {

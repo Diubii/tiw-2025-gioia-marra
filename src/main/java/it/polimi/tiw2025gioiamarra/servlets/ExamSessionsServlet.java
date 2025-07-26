@@ -82,7 +82,7 @@ public class ExamSessionsServlet extends HttpServlet {
         request.setAttribute("type", session.getAttribute("type"));
         request.setAttribute("course", course);
         request.setAttribute("examSessions", examSessions);
-        //System.out.println(examSessions);
-        ThymeleafUtils.process("/WEB-INF/templates/pure/examsessions.html", request, response, getServletContext());
+        //Prefisso /WEB-INF/templates/ e suffisso .html
+        ThymeleafUtils.process("pure/examsessions", request, response, getServletContext());
     }
 }

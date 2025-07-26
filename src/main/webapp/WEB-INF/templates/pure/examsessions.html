@@ -20,7 +20,7 @@
           <tr th:each="examSession : ${examSessions}">
             <td>
                <a th:href="(${isStudent} ? '/tiw/ExamResult' : '/tiw/enrolled-students') + '?course=' + ${course.id()} + '&session=' + ${examSession.id()}+ '&sort=matricola&order=asc'"  th:text="${examSession.dateTime()}"></a>
-               <img style="width: 1em; height: 1em;"  th:src="@{ ${examSession.enrolled()} ? 'static/svg/tick.svg' : 'static/svg/minus.svg' }" />
+               <img  th:if="${isStudent}" style="width: 1em; height: 1em;"  th:src="@{ ${examSession.enrolled()} ? 'static/svg/tick.svg' : 'static/svg/minus.svg' }" />
             </td>
           </tr>
       </tbody>

@@ -71,7 +71,8 @@ public class GradeStudentServlet extends HttpServlet {
                 } //TODO: handle else
 
                 session.setAttribute("student", studentNumber);
-                ThymeleafUtils.process("WEB-INF/templates/pure/teacher/gradestudent.html", request, response, getServletContext());
+                //Prefisso /WEB-INF/templates/ e suffisso .html
+                ThymeleafUtils.process("pure/teacher/gradestudent", request, response, getServletContext());
             }
             else{
                 response.sendRedirect("courses");

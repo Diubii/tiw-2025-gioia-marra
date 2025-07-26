@@ -14,8 +14,8 @@ public class ExamResultServerlet extends HttpServlet{
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession();
-
-        ThymeleafUtils.process("WEB-INF/templates/pure/student/examresult.html", request, response, getServletContext());
+        //Prefisso /WEB-INF/templates/ e suffisso .html
+        ThymeleafUtils.process("pure/student/examresult", request, response, getServletContext());
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {

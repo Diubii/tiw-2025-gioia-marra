@@ -83,6 +83,7 @@ public class EnrolledStudentsServlet extends HttpServlet {
 
         request.setAttribute("enrollments", enrollments);
         request.setAttribute("GradingStatus", GradingStatus.class);
-        ThymeleafUtils.process("WEB-INF/templates/pure/teacher/enrolledstudents.html", request, response, getServletContext());
+        //Prefisso /WEB-INF/templates/ e suffisso .html
+        ThymeleafUtils.process("pure/teacher/enrolledstudents", request, response, getServletContext());
     }
 }

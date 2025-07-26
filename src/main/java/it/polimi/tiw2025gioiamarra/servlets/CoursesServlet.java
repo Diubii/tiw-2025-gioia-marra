@@ -63,7 +63,8 @@ public class CoursesServlet extends HttpServlet {
             //courses.sort(Comparator.comparing(Course::name).reversed()); //ORDER BY name DESC //TODO: Sortare in SQL
             request.setAttribute("type", session.getAttribute("type"));
             request.setAttribute("courses", courses);
-            ThymeleafUtils.process("/WEB-INF/templates/pure/courses.html", request, response, getServletContext());
+            //Prefisso /WEB-INF/templates/ e suffisso .html
+            ThymeleafUtils.process("pure/courses", request, response, getServletContext());
         }
     }
 }
