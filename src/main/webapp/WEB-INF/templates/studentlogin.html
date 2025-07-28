@@ -3,30 +3,29 @@
     <head>
         <title>Login studente</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" th:href="@{/static/css/common.css}">
+        <link rel="stylesheet" th:href="@{/static/css/tailwind.css}">
         <link rel="stylesheet" th:href="@{/static/css/student.css}">
     </head>
     <body>
-        <div class="container m">
-            <h1 class="fw-m">Area Studente</h1>
-            <form class="m" th:action="@{/student-login}" method="post">
+        <div class="flex flex-col justify-center place-self-center align-self-center grow h-full w-xl">
+            <h1 class="text-3xl text-center">Area Studente</h1>
+            <form class="flex flex-col" th:action="@{/student-login}" method="post">
                 <label for="studentNumber">Matricola</label>
-                <input class="xxs-h fs-m" type="text" name="studentNumber" id="studentNumber"/>
+                <input class="bg-white" type="text" name="studentNumber" id="studentNumber"/>
 
                 <label for="password">Password</label>
-                <input class="min-xxs xxs-h fs-m" type="password" name="password" id="password"/>
+                <input class="bg-white" type="password" name="password" id="password"/>
 
                 <label th:if="${error}" style="color:red;">
                     Credenziali non valide!
                 </label>
 
-                <button class="fs-l fw-m xs-h m-w btn-submit trans" type="submit" value="Login">Login</button>
+                <button class="bg-yellow-500 my-3 p-2 w-50" type="submit" value="Login">Login</button>
                 <a th:href="@{/teacher-login}">Sei un docente?</a>
 
             </form>
         </div>
 
-        <div th:insert="layout/footer :: site-footer"></div>
-
+        <div class="text-center" th:insert="layout/footer :: site-footer"></div>
     </body>
 </html>
