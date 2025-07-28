@@ -1,0 +1,90 @@
+<link rel="stylesheet" th:href="@{/static/css/tailwind.css}">
+
+<!-- NAVBAR --><!--
+<div th:fragment="navbar" >
+    <nav >
+        <a th:href="@{${backLink}}" style="margin-right: 20px;"> <-- mettere icona </a>
+        <a  th:href="@{/courses}" style="margin-right: 10px;">I miei corsi</a>
+        <a th:unless="${isStudent}" th:href="@{/reports}" style="margin-right: 10px;">I miei verbali</a>
+        <a th:href="@{/logout}" style="margin-right: 100px;">LOGOUT</a>
+    </nav>
+</div> -->
+
+<div th:fragment="navbar">
+    <nav class="bg-gray-800 text-white px-6 py-3 flex items-center space-x-4">
+
+        <a th:href="@{${backLink}}">
+            <button type="button" class="flex items-center space-x-2 px-3 py-2 rounded hover:bg-gray-700 transition">
+                <img  style="width: 1.6em; height: 1.6em;"  th:src="@{static/svg/back-arrow.svg}" />
+            </button>
+        </a>
+
+
+        <a th:href="@{/courses}">
+            <button type="button" class="px-3 py-2 rounded hover:bg-gray-700 transition">
+                I miei corsi
+            </button>
+        </a>
+
+
+        <a th:unless="${isStudent}" th:href="@{/reports}">
+            <button type="button" class="px-3 py-2 rounded hover:bg-gray-700 transition">
+                I miei verbali
+            </button>
+        </a>
+
+        <a th:href="@{/logout}" class="ml-auto">
+            <button type="button" class="px-3 py-2 rounded bg-red-600 hover:bg-red-700 transition font-semibold">
+                Logout
+            </button>
+        </a>
+    </nav>
+</div>
+
+<!-- #################  PAGES CONTENT #####################-->
+
+<!-- courses -->
+<div class="flex-1 p-6" th:fragment="courses">
+    <table class="m-w xs-h fs-xl">
+        <thead class="fw-m">
+        <tr>
+            <th th:text="${isStudent} ? 'I corsi che frequenti' : 'I miei corsi'"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="course : ${courses}">
+            <td><a th:href="@{|exam-sessions?course=${course.id()}|}"  th:text=" '[' + ${course.id()} + '] ' + ${course.name()}"></a></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- examsessions-->
+<div class="flex-1 p-6" th:fragment="examsessions">
+    <h1 class="fs-xl fw-l" th:text="'Appelli d\'esame del corso: ' + ${course.name()}"></h1>
+    <table class="m-w xs-h fs-xl">
+        <thead class="fw-m">
+        <tr>
+            <th>Date</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="examSession : ${examSessions}">
+            <td>
+                <a th:href="(${isStudent} ? '/tiw/ExamResult' : '/tiw/enrolled-students') + '?course=' + ${course.id()} + '&session=' + ${examSession.id()}+ '&sort=matricola&order=asc'"  th:text="${examSession.dateTime()}"></a>
+                <img  th:if="${isStudent}" style="width: 1em; height: 1em;"  th:src="@{ ${examSession.enrolled()} ? 'static/svg/tick.svg' : 'static/svg/minus.svg' }" />
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- FOOTER -->
+<footer th:fragment="site-footer" class="bg-gray-900 text-white py-6 mt-10">
+    <div class="w-full px-4 flex justify-center items-center">
+        <p class="text-sm text-center">
+            2025 T.I.W. - Verbalizzazione esami -
+            Gioia Alessandro & Marra Mattia
+        </p>
+    </div>
+</footer>

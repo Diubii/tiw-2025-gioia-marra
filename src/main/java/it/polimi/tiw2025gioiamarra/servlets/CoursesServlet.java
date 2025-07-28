@@ -4,6 +4,7 @@ import it.polimi.tiw2025gioiamarra.items.Course;
 import it.polimi.tiw2025gioiamarra.items.LoginType;
 import it.polimi.tiw2025gioiamarra.utils.ThymeleafUtils;
 import it.polimi.tiw2025gioiamarra.utils.Database;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,7 +18,7 @@ import java.util.Comparator;
 
 @WebServlet(name = "coursesServlet", value = "/courses")
 public class CoursesServlet extends HttpServlet {
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         HttpSession session = request.getSession();
         if (session.getAttribute("type") == null || (session.getAttribute("teacher") == null && session.getAttribute("student") == null)) {
             response.sendRedirect("student-login");
@@ -60,11 +61,26 @@ public class CoursesServlet extends HttpServlet {
                 System.out.println(e.getMessage());
                 response.sendRedirect("student-login");
             }
-            //courses.sort(Comparator.comparing(Course::name).reversed()); //ORDER BY name DESC //TODO: Sortare in SQL
+
+            //CONFIGURAZIONE PARAMETRI SPECIFICI PER LA PAGINA
             request.setAttribute("type", session.getAttribute("type"));
             request.setAttribute("courses", courses);
-            //Prefisso /WEB-INF/templates/ e suffisso .html
-            ThymeleafUtils.process("pure/courses", request, response, getServletContext());
+
+            //CONFIGURAZIONE LAYOUT
+            String pageTitle;
+            if(session.getAttribute("type") == LoginType.Student) {
+                pageTitle = "Corsi studente";
+            }
+            else{
+                pageTitle = "Corsi docente";
+            }
+
+            request.setAttribute("pageTitle", pageTitle);
+            request.setAttribute("fragname", "courses");
+            request.setAttribute("fragkind", "generalFragments");
+            request.setAttribute("backLink", "#");
+            ThymeleafUtils.process("generalLayout", request, response, getServletContext());
+
         }
     }
 }

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:with="isStudent=${type.name()=='Student'}">
+<head>
+    <title th:text="${pageTitle}">Titolo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/static/css/tailwind.css}">
+    <!--DEPRECATO VEDERE CON NUOVO CSS
+    <link rel="stylesheet" th:href="@{/static/css/common.css}" /> -->
+    <link rel="stylesheet"  th:if="${isStudent}" th:href="@{/static/css/student.css}" />
+    <link rel="stylesheet"  th:unless="${isStudent}" th:href="@{/static/css/teacher.css}" />
+</head>
+    <body>
+
+        <div th:replace="fragments/generalFragments :: navbar"></div>
+
+        <header>
+            <h1 th:text="${pageTitle}">Titolo</h1>
+        </header>
+
+        <main  th:replace="@{'fragments/'+${fragkind}} :: ${fragname}">
+
+        </main>
+
+        <div th:replace="fragments/generalFragments :: footer"></div>
+
+    </body>
+</html>

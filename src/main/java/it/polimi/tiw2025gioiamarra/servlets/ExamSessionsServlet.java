@@ -79,10 +79,17 @@ public class ExamSessionsServlet extends HttpServlet {
             return;
         }
 
+        //CONFIGURAZIONE PARAMETRI SPECIFICI PER LA PAGINA
         request.setAttribute("type", session.getAttribute("type"));
         request.setAttribute("course", course);
         request.setAttribute("examSessions", examSessions);
-        //Prefisso /WEB-INF/templates/ e suffisso .html
-        ThymeleafUtils.process("pure/examsessions", request, response, getServletContext());
+
+        //CONFIGURAZIONE LAYOUT
+        request.setAttribute("pageTitle", "Appelli d'esame");
+        request.setAttribute("fragname", "examsessions");
+        request.setAttribute("fragkind", "generalFragments");
+        request.setAttribute("backLink", "/courses");
+        ThymeleafUtils.process("generalLayout", request, response, getServletContext());
+
     }
 }
