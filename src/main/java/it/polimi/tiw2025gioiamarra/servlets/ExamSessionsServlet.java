@@ -80,12 +80,12 @@ public class ExamSessionsServlet extends HttpServlet {
         }
 
         //CONFIGURAZIONE PARAMETRI SPECIFICI PER LA PAGINA
-        request.setAttribute("type", session.getAttribute("type"));
         request.setAttribute("course", course);
         request.setAttribute("examSessions", examSessions);
 
         //CONFIGURAZIONE LAYOUT
-        request.setAttribute("pageTitle", "Appelli d'esame");
+        request.setAttribute("type", session.getAttribute("type"));
+        request.setAttribute("pageTitle", "Date appelli d'esame");
         request.setAttribute("fragname", "examsessions");
         request.setAttribute("fragkind", "generalFragments");
         request.setAttribute("backLink", "/courses");

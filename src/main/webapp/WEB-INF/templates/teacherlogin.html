@@ -1,29 +1,31 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="it">
     <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Login docente</title>
-        <link rel="stylesheet" th:href="@{/static/css/common.css}">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" th:href="@{/static/css/tailwind.css}">
         <link rel="stylesheet" th:href="@{/static/css/teacher.css}">
     </head>
     <body>
-        <div class="container m">
-            <h1 class="fw-m">Area Docente</h1>
-            <form class="m" th:action="@{/teacher-login}" method="post">
-                <label for="teacherID">ID docente</label>
-                <input class="xxs-h fs-l" type="text" name="teacherID" id="teacherID"/>
+        <div class="flex flex-col justify-center place-self-center align-self-center h-full w-xl">
+            <div class="overflow-x-auto rounded-lg shadow-md p-6 w-xl max-w-md mx-auto">
+                <h1 class="text-3xl text-center">Area Docente</h1>
+                <form class="flex flex-col" th:action="@{/teacher-login}" method="post">
+                    <label for="teacherID">ID docente</label>
+                    <input class="bg-white" type="text" name="teacherID" id="teacherID"/>
 
-                <label for="password">Password</label>
-                <input class="min-xxs xxs-h fs-m" type="password" name="password" id="password"/>
+                    <label for="password">Password</label>
+                    <input class="bg-white" type="password" name="password" id="password"/>
 
-                <label th:if="${error}" style="color:red;">
-                    Credenziali non valide!
-                </label>
+                    <label th:if="${error}" style="color:red;">
+                        Credenziali non valide!
+                    </label>
 
-                <button class="fs-l fw-m xs-h m-w btn-submit trans" type="submit" value="Login">Login</button>
+                    <button class="bg-purple-400 my-3 p-2 w-50" type="submit" value="Login">Login</button>
 
-                <a th:href="@{/student-login}">Sei uno studente?</a>
-            </form>
+                    <a th:href="@{/student-login}">Sei uno studente?</a>
+                </form>
+            </div>
         </div>
     </body>
 </html>

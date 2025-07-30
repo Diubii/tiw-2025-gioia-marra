@@ -53,13 +53,15 @@ public class EnrolledStudentsServlet extends HttpServlet {
             sortDirection = "DESC";
         }
 
+        int courseID = Integer.parseInt(request.getParameter("course"));
+        int sessionID = Integer.parseInt(request.getParameter("session"));
+
         try {
 
             PreparedStatement ps = con.prepareStatement("SELECT matricola, cognome, nome, email, corsoLaurea, voto, statoValutazione, idVerbale, idAppello FROM esame NATURAL JOIN iscrizioneCorso NATURAL JOIN studente WHERE idCorso = ? && idAppello = ? ORDER BY "+orderBy+" "+sortDirection);
             //Todo regolare ordine in base a parametri?
             //System.out.println("Eseguo la query: " + ps.toString());
-            int courseID = Integer.parseInt(request.getParameter("course"));
-            int sessionID = Integer.parseInt(request.getParameter("session"));
+
             ps.setInt(1, courseID);
             ps.setInt(2, sessionID);
             ResultSet rs = ps.executeQuery();
@@ -76,14 +78,27 @@ public class EnrolledStudentsServlet extends HttpServlet {
                 Enrollment enrollment = new Enrollment(student, grade, gradingStatus, verbalID, courseID, sessionID);
                 //System.out.println(enrollment);
                 enrollments.add(enrollment);
+
+
+
             }
         } catch (SQLException e) { //TODO: gestire eccezione
             throw new RuntimeException(e);
         }
 
+        //CONFIGURAZIONE PARAMETRI SPECIFICI PER LA PAGINA
         request.setAttribute("enrollments", enrollments);
         request.setAttribute("GradingStatus", GradingStatus.class);
-        //Prefisso /WEB-INF/templates/ e suffisso .html
-        ThymeleafUtils.process("pure/teacher/enrolledstudents", request, response, getServletContext());
+
+
+        //CONFIGURAZIONE LAYOUT
+        request.setAttribute("type", session.getAttribute("type"));
+        request.setAttribute("pageTitle", "Studenti iscritti");
+        request.setAttribute("fragname", "enrolledstudents");
+        request.setAttribute("fragkind", "teacherFragments");
+        request.setAttribute("backLink", "exam-sessions?course=" + courseID);
+        ThymeleafUtils.process("generalLayout", request, response, getServletContext());
+
+
     }
 }

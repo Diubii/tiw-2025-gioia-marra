@@ -63,7 +63,7 @@ public class CoursesServlet extends HttpServlet {
             }
 
             //CONFIGURAZIONE PARAMETRI SPECIFICI PER LA PAGINA
-            request.setAttribute("type", session.getAttribute("type"));
+
             request.setAttribute("courses", courses);
 
             //CONFIGURAZIONE LAYOUT
@@ -75,6 +75,7 @@ public class CoursesServlet extends HttpServlet {
                 pageTitle = "Corsi docente";
             }
 
+            request.setAttribute("type", session.getAttribute("type"));
             request.setAttribute("pageTitle", pageTitle);
             request.setAttribute("fragname", "courses");
             request.setAttribute("fragkind", "generalFragments");

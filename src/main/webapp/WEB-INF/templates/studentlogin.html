@@ -7,25 +7,27 @@
         <link rel="stylesheet" th:href="@{/static/css/student.css}">
     </head>
     <body>
-        <div class="flex flex-col justify-center place-self-center align-self-center grow h-full w-xl">
-            <h1 class="text-3xl text-center">Area Studente</h1>
-            <form class="flex flex-col" th:action="@{/student-login}" method="post">
-                <label for="studentNumber">Matricola</label>
-                <input class="bg-white" type="text" name="studentNumber" id="studentNumber"/>
+        <div class="flex flex-col justify-center place-self-center align-self-center  h-full w-xl ">
+            <div class="overflow-x-auto rounded-lg shadow-md p-6 w-xl max-w-md mx-auto">
+                <h1 class="text-3xl text-center">Area Studente</h1>
+                <form class="flex flex-col" th:action="@{/student-login}" method="post">
+                    <label for="studentNumber">Matricola</label>
+                    <input class="bg-white" type="text" name="studentNumber" id="studentNumber"/>
 
-                <label for="password">Password</label>
-                <input class="bg-white" type="password" name="password" id="password"/>
+                    <label for="password">Password</label>
+                    <input class="bg-white" type="password" name="password" id="password"/>
 
-                <label th:if="${error}" style="color:#c52a2a;">
-                    Credenziali non valide!
-                </label>
+                    <label th:if="${error}" style="color:#c52a2a;">
+                        Credenziali non valide!
+                    </label>
 
-                <button class="bg-yellow-500 my-3 p-2 w-50" type="submit" value="Login">Login</button>
-                <a th:href="@{/teacher-login}">Sei un docente?</a>
+                    <button class="bg-yellow-500 my-3 p-2 w-50" type="submit" value="Login">Login</button>
 
-            </form>
+                    <a th:href="@{/teacher-login}">Sei un docente?</a>
+                </form>
+            </div>
+
         </div>
 
-        <div class="text-center" th:insert="layout/footer :: site-footer"></div>
     </body>
 </html>

@@ -17,7 +17,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 @WebServlet(name="ExamResultServerlet", value = "/ExamResult")
-public class ExamSessionServerlet extends HttpServlet{
+public class ExamResultServerlet extends HttpServlet{
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession();
@@ -68,10 +68,20 @@ public class ExamSessionServerlet extends HttpServlet{
                 request.setAttribute("examsession", examSession);
 
 
+
+                //CONFIGURAZIONE PARAMETRI SPECIFICI PER LA PAGINA
                 session.setAttribute("examSession", examSessionID);
                 session.setAttribute("student", studentNumber);
-                //Prefisso /WEB-INF/templates/ e suffisso .html
-                ThymeleafUtils.process("pure/student/examsession", request, response, getServletContext());
+
+
+                //CONFIGURAZIONE LAYOUT
+                request.setAttribute("type", session.getAttribute("type"));
+                request.setAttribute("pageTitle", "Risultato esame");
+                request.setAttribute("fragname", "examresult");
+                request.setAttribute("fragkind", "studentFragments");
+                request.setAttribute("backLink", "exam-sessions?course=" + courseID);
+                ThymeleafUtils.process("generalLayout", request, response, getServletContext());
+
             }
             else{
                 //caso non enrolled sarebbe questo

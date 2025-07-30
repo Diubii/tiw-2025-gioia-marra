@@ -4,24 +4,23 @@
     <title th:text="${pageTitle}">Titolo</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" th:href="@{/static/css/tailwind.css}">
-    <!--DEPRECATO VEDERE CON NUOVO CSS
-    <link rel="stylesheet" th:href="@{/static/css/common.css}" /> -->
     <link rel="stylesheet"  th:if="${isStudent}" th:href="@{/static/css/student.css}" />
     <link rel="stylesheet"  th:unless="${isStudent}" th:href="@{/static/css/teacher.css}" />
 </head>
-    <body>
+    <body class="relative min-h-screen">
 
-        <div th:replace="fragments/generalFragments :: navbar"></div>
+    <div th:replace="fragments/generalFragments :: navbar"></div>
 
+    <main class="grow flex-col items-center text-center px-4 py-8 w-full">
         <header>
-            <h1 th:text="${pageTitle}">Titolo</h1>
+            <h1 th:text="${pageTitle}" class="px-6 py-3 text-center font-semibold text-gray-700 uppercase tracking-wider">Titolo</h1>
         </header>
 
-        <main  th:replace="@{'fragments/'+${fragkind}} :: ${fragname}">
+        <div th:replace="@{'fragments/'+${fragkind}} :: ${fragname}" class="w-full max-w-3xl">
+        </div>
+    </main>
 
-        </main>
-
-        <div th:replace="fragments/generalFragments :: footer"></div>
+    <div th:replace="fragments/generalFragments :: footer"></div>
 
     </body>
 </html>

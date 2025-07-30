@@ -1,22 +1,6 @@
 body{
-    background-color: #DAC4F7;
+    background-color: #e6d5fd;
     gap: 1em;
 }
 
-table, th, td{
-    background-color: #ECFEF6;
-}
 
-form{
-    background-color: #817693;
-    color: #ECFEF6;
-}
-
-a.button{
-    background-color: #817693;
-    color: #E9EBEC;
-}
-
-a.button:hover{
-    background-color: #595265;
-}

@@ -1,0 +1,122 @@
+
+<!-- enrolledstudents-->
+<div  th:fragment="enrolledstudents">
+  <h1 class="px-6 py-3 text-center text-base font-semibold text-gray-700 uppercase tracking-wider">Studenti iscritti all'appello</h1> <!--TODO: Aggiungere nome corso e data appello-->
+  <div class="overflow-x-auto rounded-lg shadow-md">
+        <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-100">
+      <tr>
+        <th class="px-6 py-3 text-center text-base font-semibold text-gray-700 uppercase tracking-wider">
+          <a th:href="@{/enrolled-students(course=${param.course}, session=${param.session}, sort='matricola', order=${( param.sort[0]== 'matricola' && param.order[0] == 'asc') ? 'desc' : 'asc'})}" class="inline-flex items-center space-x-1">
+            Matricola
+            <span th:if="${param.sort[0] == 'matricola'}">
+                <img th:if="${param.order[0] == 'desc'}" th:src="@{/static/svg/up.svg}" alt="up" style="width:1em; height:1em;" />
+                <img th:if="${param.order[0] != 'desc'}" th:src="@{/static/svg/down.svg}" alt="down" style="width:1em; height:1em;" />
+            </span>
+          </a>
+        </th >
+        <th class="px-6 py-3 text-center text-base font-semibold text-gray-700 uppercase tracking-wider">
+          <a th:href="@{/enrolled-students(course=${param.course}, session=${param.session}, sort='cognome', order=${( param.sort[0]== 'cognome' && param.order[0] == 'asc') ? 'desc' : 'asc'})}" class="inline-flex items-center space-x-1">
+            Cognome e nome
+            <span th:if="${param.sort[0] == 'cognome'}">
+                <img th:if="${param.order[0] == 'desc'}" th:src="@{/static/svg/up.svg}" alt="up" style="width:1em; height:1em;" />
+                <img th:if="${param.order[0] != 'desc'}" th:src="@{/static/svg/down.svg}" alt="down" style="width:1em; height:1em;" />
+            </span>
+          </a>
+        </th>
+        <th class="px-6 py-3 text-center text-base font-semibold text-gray-700 uppercase tracking-wider">
+          <a th:href="@{/enrolled-students(course=${param.course}, session=${param.session}, sort='email', order=${( param.sort[0]== 'email' && param.order[0] == 'asc') ? 'desc' : 'asc'})}" class="inline-flex items-center space-x-1">
+            Email
+            <span th:if="${param.sort[0] == 'email'}">
+                <img th:if="${param.order[0] == 'desc'}" th:src="@{/static/svg/up.svg}" alt="up" style="width:1em; height:1em;" />
+                <img th:if="${param.order[0] != 'desc'}" th:src="@{/static/svg/down.svg}" alt="down" style="width:1em; height:1em;" />
+            </span>
+          </a>
+        </th>
+        <th class="px-6 py-3 text-center text-base font-semibold text-gray-700 uppercase tracking-wider">
+          <a th:href="@{/enrolled-students(course=${param.course}, session=${param.session}, sort='corsoLaurea', order=${( param.sort[0]== 'corsoLaurea' && param.order[0] == 'asc') ? 'desc' : 'asc'})}" class="inline-flex items-center space-x-1">
+            Corso di laurea
+            <span th:if="${param.sort[0] == 'corsoLaurea'}">
+                <img th:if="${param.order[0] == 'desc'}" th:src="@{/static/svg/up.svg}" alt="up" style="width:1em; height:1em;" />
+                <img th:if="${param.order[0] != 'desc'}" th:src="@{/static/svg/down.svg}" alt="down" style="width:1em; height:1em;" />
+            </span>
+          </a>
+        </th>
+        <th class="px-6 py-3 text-center text-base font-semibold text-gray-700 uppercase tracking-wider">
+          <a th:href="@{/enrolled-students(course=${param.course}, session=${param.session}, sort='voto', order=${( param.sort[0]== 'voto' && param.order[0] == 'asc') ? 'desc' : 'asc'})}" class="inline-flex items-center space-x-1">
+            Voto
+            <span th:if="${param.sort[0] == 'voto'}">
+                <img th:if="${param.order[0] == 'desc'}" th:src="@{/static/svg/up.svg}" alt="up" style="width:1em; height:1em;" />
+                <img th:if="${param.order[0] != 'desc'}" th:src="@{/static/svg/down.svg}" alt="down" style="width:1em; height:1em;" />
+            </span>
+          </a>
+        </th>
+        <th class="px-6 py-3 text-center text-base font-semibold text-gray-700 uppercase tracking-wider">
+          <a th:href="@{/enrolled-students(course=${param.course}, session=${param.session}, sort='statoValutazione', order=${( param.sort[0]== 'statoValutazione' && param.order[0] == 'asc') ? 'desc' : 'asc'})}" class="inline-flex items-center space-x-1">
+            Stato valutazione
+            <span th:if="${param.sort[0] == 'statoValutazione'}">
+                <img th:if="${param.order[0] == 'desc'}" th:src="@{/static/svg/up.svg}" alt="up" style="width:1em; height:1em;" />
+                <img th:if="${param.order[0] != 'desc'}" th:src="@{/static/svg/down.svg}" alt="down" style="width:1em; height:1em;" />
+            </span>
+          </a>
+        </th>
+        <th class="px-6 py-3 text-center text-base font-semibold text-gray-700 uppercase tracking-wider">
+          <a th:href="@{/enrolled-students(course=${param.course}, session=${param.session}, sort='idVerbale', order=${( param.sort[0]== 'idVerbale' && param.order[0] == 'asc') ? 'desc' : 'asc'})}" class="inline-flex items-center space-x-1">
+            Verbale
+            <span th:if="${param.sort[0] == 'idVerbale'}">
+                <img th:if="${param.order[0] == 'desc'}" th:src="@{/static/svg/up.svg}" alt="up" style="width:1em; height:1em;" />
+                <img th:if="${param.order[0] != 'desc'}" th:src="@{/static/svg/down.svg}" alt="down" style="width:1em; height:1em;" />
+            </span>
+          </a>
+        </th>
+        <th class="px-6 py-3 text-center text-base font-semibold text-gray-700 uppercase tracking-wider">Modifica</th>
+      </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200 bg-white">
+      <tr th:each="enrollment : ${enrollments}">
+        <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900" th:text="${enrollment.student().id()}"></td>
+        <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900" th:text="|${enrollment.student().surname()} ${enrollment.student().name()}|"></td>
+        <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900" th:text="${enrollment.student().email()}"></td>
+        <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900" th:text="${enrollment.student().degreeCourse()}"></td>
+        <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900" th:text="${enrollment.grade()}"></td>
+        <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900" th:text="${enrollment.gradingStatus().toString()}"></td>
+        <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900"  th:text="${enrollment.verbalID()}"></td>
+        <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900" ><a th:if="${enrollment.gradingStatus().name() == 'NotInserted' or enrollment.gradingStatus().name() == 'Inserted'}" th:href="|@{grade-student}?student=${enrollment.student().id()}&course=${enrollment.courseID()}&session=${enrollment.examSessionID()}|"><img class="s" style="width: 1em; height: 1em;" th:src="@{static/svg/pencil-square.svg}" alt="Modifica"/></a></td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="mt-6 flex justify-center space-x-4">
+    <a class="inline-block bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 text-white font-medium rounded-md text-sm px-4 py-2 transition" th:href="@{publish-grades(course=${param.course}, session=${param.session}, sort=${param.sort}, order=${param.order})}">Pubblica</a>
+    <a class="inline-block bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 text-white font-medium rounded-md text-sm px-4 py-2 transition" th:href="@{verbalize-grades}">Verbalizza</a>
+  </div>
+</div>
+
+
+<!-- gradestudent-->
+<div class="overflow-x-auto rounded-lg shadow-md" th:fragment="gradestudent">
+  <form class="w-full max-w-md mx-auto p-6 space-y-6" action="grade-student" method="post">
+    <label class="block text-sm font-medium text-gray-700" for="studentNumber">Matricola</label>
+    <input class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm text-center bg-white disabled:bg-gray-100 disabled:text-gray-500" type="text" id="studentNumber" th:value="${enrollment.student().id()}" disabled/>
+
+    <label class="block text-sm font-medium text-gray-700" for="studentFullName">Cognome e nome</label>
+    <input class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm text-center bg-white disabled:bg-gray-100 disabled:text-gray-500" type="text" id="studentFullName" th:value="|${enrollment.student().name()} ${enrollment.student().surname()}|" disabled/>
+
+    <label class="block text-sm font-medium text-gray-700" for="studentEmail">Email</label>
+    <input class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm text-center bg-white disabled:bg-gray-100 disabled:text-gray-500" type="text" id="studentEmail" th:value="${enrollment.student().email()}" disabled/>
+
+    <label class="block text-sm font-medium text-gray-700" for="degreeCourse">Corso di laurea</label>
+    <input class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm text-center bg-white disabled:bg-gray-100 disabled:text-gray-500" type="text" id="degreeCourse" th:value="${enrollment.student().degreeCourse()}" disabled/>
+
+    <label class="block text-sm font-medium text-gray-700" for="grade">Voto</label>
+    <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm text-center bg-white disabled:bg-gray-100 disabled:text-gray-500" name="grade" id="grade">
+      <option th:each="grade : ${grades}" th:value="${grade}" th:text="${grade}" name="grade"></option>
+    </select>
+
+    <label class="block text-sm font-medium text-gray-700" for="gradingStatus">Stato valutazione</label>
+    <input class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm text-center bg-white disabled:bg-gray-100 disabled:text-gray-500" type="text" id="gradingStatus" th:value="${enrollment.gradingStatus().toString()}" disabled/>
+
+    <input class="w-full bg-purple-700 text-white font-medium py-2 px-4 rounded-md hover:bg-purple-800 transition" type="submit" value="Valuta studente"/>
+  </form>
+</div>

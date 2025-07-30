@@ -2,6 +2,7 @@ package it.polimi.tiw2025gioiamarra.servlets.teacher;
 
 import it.polimi.tiw2025gioiamarra.items.Enrollment;
 import it.polimi.tiw2025gioiamarra.items.GradingStatus;
+import it.polimi.tiw2025gioiamarra.items.LoginType;
 import it.polimi.tiw2025gioiamarra.items.Student;
 import it.polimi.tiw2025gioiamarra.utils.Database;
 import it.polimi.tiw2025gioiamarra.utils.ThymeleafUtils;
@@ -70,9 +71,17 @@ public class GradeStudentServlet extends HttpServlet {
                     request.setAttribute("grades", grades);
                 } //TODO: handle else
 
+                //CONFIGURAZIONE PARAMETRI SPECIFICI PER LA PAGINA
                 session.setAttribute("student", studentNumber);
-                //Prefisso /WEB-INF/templates/ e suffisso .html
-                ThymeleafUtils.process("pure/teacher/gradestudent", request, response, getServletContext());
+
+                //CONFIGURAZIONE LAYOUT
+                request.setAttribute("type", session.getAttribute("type"));
+                request.setAttribute("pageTitle", "Valuta studente");
+                request.setAttribute("fragname", "gradestudent");
+                request.setAttribute("fragkind", "teacherFragments");
+                request.setAttribute("backLink", "enrolled-students?course=" + courseID + "&session=" + examSessionID+"&sort=matricola&order=asc");
+                ThymeleafUtils.process("generalLayout", request, response, getServletContext());
+
             }
             else{
                 response.sendRedirect("courses");
