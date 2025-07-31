@@ -2,8 +2,9 @@
 <!-- enrolledstudents-->
 <div  th:fragment="enrolledstudents">
   <h1 class="px-6 py-3 text-center text-base font-semibold text-gray-700 uppercase tracking-wider">Studenti iscritti all'appello</h1> <!--TODO: Aggiungere nome corso e data appello-->
-  <div class="overflow-x-auto rounded-lg shadow-md">
-        <table class="min-w-full divide-y divide-gray-200">
+    <h1 th:if="${emptyReport}" class="px-6 py-3 text-center text-base font-semibold text-red-700 uppercase tracking-wider">Nessun voto da verbalizzare</h1>
+    <div class="overflow-x-auto rounded-lg shadow-md">
+    <table class="min-w-full divide-y divide-gray-200">
       <thead class="bg-gray-100">
       <tr>
         <th class="px-6 py-3 text-center text-base font-semibold text-gray-700 uppercase tracking-wider">
@@ -89,7 +90,7 @@
 
   <div class="mt-6 flex justify-center space-x-4">
     <a class="inline-block bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 text-white font-medium rounded-md text-sm px-4 py-2 transition" th:href="@{publish-grades(course=${param.course}, session=${param.session}, sort=${param.sort}, order=${param.order})}">Pubblica</a>
-    <a class="inline-block bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 text-white font-medium rounded-md text-sm px-4 py-2 transition" th:href="@{verbalize-grades}">Verbalizza</a>
+    <a class="inline-block bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 text-white font-medium rounded-md text-sm px-4 py-2 transition" th:href="@{generateReport(session=${param.session},course=${param.course})}">Verbalizza</a>
   </div>
 </div>
 
@@ -119,4 +120,80 @@
 
     <input class="w-full bg-purple-700 text-white font-medium py-2 px-4 rounded-md hover:bg-purple-800 transition" type="submit" value="Valuta studente"/>
   </form>
+</div>
+
+<!-- reportList -->
+<div class="overflow-x-auto rounded-lg shadow-md mt-6" th:fragment="reportList">
+    <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-100">
+        <tr>
+            <th class="px-6 py-3 text-center text-base font-semibold text-gray-700 uppercase tracking-wider">Id verbale</th>
+            <th class="px-6 py-3 text-center text-base font-semibold text-gray-700 uppercase tracking-wider">Data verbale</th>
+            <th class="px-6 py-3 text-center text-base font-semibold text-gray-700 uppercase tracking-wider" >Corso</th>
+            <th class="px-6 py-3 text-center text-base font-semibold text-gray-700 uppercase tracking-wider">Data appello</th>
+            <th class="px-6 py-3 text-center text-base font-semibold text-gray-700 uppercase tracking-wider">Azione</th>
+        </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200 bg-white">
+        <tr th:each="report : ${reports}">
+            <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900" th:text="${report.id()}"></td>
+            <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900" th:text="${report.reportDate()} "></td>
+            <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900" th:text="${report.courseName()}"></td>
+            <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900" th:text="${report.examDate()}"></td>
+            <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900" >
+                <a th:href="@{report(reportId=${report.id()},sessionId=${report.sessionId()})}" class="inline-block bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 text-white font-medium rounded-md text-sm px-4 py-2 transition">Apri</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- report -->
+<div th:fragment="report">
+    <div class="overflow-x-auto rounded-lg shadow-md mt-6" >
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-100">
+            <tr>
+                <th class="px-6 py-3 text-center text-base font-semibold text-gray-700 uppercase tracking-wider">Id verbale</th>
+                <th class="px-6 py-3 text-center text-base font-semibold text-gray-700 uppercase tracking-wider">Data verbale</th>
+                <th class="px-6 py-3 text-center text-base font-semibold text-gray-700 uppercase tracking-wider" >Corso</th>
+                <th class="px-6 py-3 text-center text-base font-semibold text-gray-700 uppercase tracking-wider">Data appello</th>
+            </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200 bg-white">
+            <tr>
+                <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900" th:text="${report.id()}"></td>
+                <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900" th:text="${report.reportDate()} "></td>
+                <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900" th:text="${report.courseName()}"></td>
+                <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900" th:text="${report.examDate()}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="mt-6 overflow-x-auto rounded-lg shadow-md">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-100">
+            <tr>
+                <th class="px-6 py-3 text-center text-base font-semibold text-gray-700 uppercase tracking-wider">
+                    Matricola
+                </th>
+                <th class="px-6 py-3 text-center text-base font-semibold text-gray-700 uppercase tracking-wider">
+                    Cognome e Nome
+                </th>
+                <th class="px-6 py-3 text-center text-base font-semibold text-gray-700 uppercase tracking-wider">
+                     Voto
+                </th>
+            </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200 bg-white">
+            <tr th:each="enrollment : ${enrollments}">
+                <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900" th:text="${enrollment.student().id()}"></td>
+                <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900" th:text="|${enrollment.student().surname()} ${enrollment.student().name()}|"></td>
+                <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900" th:text="${enrollment.grade()}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
 </div>

@@ -59,9 +59,6 @@ public class EnrolledStudentsServlet extends HttpServlet {
         try {
 
             PreparedStatement ps = con.prepareStatement("SELECT matricola, cognome, nome, email, corsoLaurea, voto, statoValutazione, idVerbale, idAppello FROM esame NATURAL JOIN iscrizioneCorso NATURAL JOIN studente WHERE idCorso = ? && idAppello = ? ORDER BY "+orderBy+" "+sortDirection);
-            //Todo regolare ordine in base a parametri?
-            //System.out.println("Eseguo la query: " + ps.toString());
-
             ps.setInt(1, courseID);
             ps.setInt(2, sessionID);
             ResultSet rs = ps.executeQuery();
@@ -89,6 +86,7 @@ public class EnrolledStudentsServlet extends HttpServlet {
         //CONFIGURAZIONE PARAMETRI SPECIFICI PER LA PAGINA
         request.setAttribute("enrollments", enrollments);
         request.setAttribute("GradingStatus", GradingStatus.class);
+        request.setAttribute("emptyReport", request.getParameter("emptyReport"));
 
 
         //CONFIGURAZIONE LAYOUT
