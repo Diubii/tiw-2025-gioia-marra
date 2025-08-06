@@ -80,7 +80,7 @@ public class ExamResultServerlet extends HttpServlet{
                 request.setAttribute("fragname", "examresult");
                 request.setAttribute("fragkind", "studentFragments");
                 request.setAttribute("backLink", "exam-sessions?course=" + courseID);
-                ThymeleafUtils.process("generalLayout", request, response, getServletContext());
+                ThymeleafUtils.process(ThymeleafUtils.getRightPath(request), request, response, getServletContext());
 
             }
             else{

@@ -95,7 +95,7 @@ public class EnrolledStudentsServlet extends HttpServlet {
         request.setAttribute("fragname", "enrolledstudents");
         request.setAttribute("fragkind", "teacherFragments");
         request.setAttribute("backLink", "exam-sessions?course=" + courseID);
-        ThymeleafUtils.process("generalLayout", request, response, getServletContext());
+        ThymeleafUtils.process(ThymeleafUtils.getRightPath(request), request, response, getServletContext());
 
 
     }

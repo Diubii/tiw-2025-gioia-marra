@@ -80,7 +80,7 @@ public class GradeStudentServlet extends HttpServlet {
                 request.setAttribute("fragname", "gradestudent");
                 request.setAttribute("fragkind", "teacherFragments");
                 request.setAttribute("backLink", "enrolled-students?course=" + courseID + "&session=" + examSessionID+"&sort=matricola&order=asc");
-                ThymeleafUtils.process("generalLayout", request, response, getServletContext());
+                ThymeleafUtils.process(ThymeleafUtils.getRightPath(request), request, response, getServletContext());
 
             }
             else{

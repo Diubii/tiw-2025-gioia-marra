@@ -9,18 +9,19 @@
 </head>
     <body class="relative min-h-screen">
 
-    <div th:replace="fragments/generalFragments :: navbar"></div>
+        <div th:replace="fragments/generalFragments :: navbar"></div>
 
-    <main class="grow flex-col items-center text-center px-4 py-8 w-full">
-        <header>
-            <h1 th:text="${pageTitle}" class="px-6 py-3 text-center font-semibold text-gray-700 uppercase tracking-wider">Titolo</h1>
-        </header>
+        <main class="grow flex-col items-center text-center px-4 py-8 w-full">
+            <header>
+                <h1 th:text="${pageTitle}" class="px-6 py-3 text-center font-semibold text-gray-700 uppercase tracking-wider">Titolo</h1>
+            </header>
 
-        <div th:replace="@{'fragments/'+${fragkind}} :: ${fragname}" class="w-full max-w-3xl">
-        </div>
-    </main>
+            <div id="fragment-container" th:insert="@{'fragments/'+${fragkind}} :: ${fragname}"></div>
+        </main>
 
-    <div th:replace="fragments/generalFragments :: footer"></div>
+        <div th:replace="fragments/generalFragments :: footer"></div>
 
     </body>
+
+    <script th:src="@{/static/js/spa.js}"></script>
 </html>

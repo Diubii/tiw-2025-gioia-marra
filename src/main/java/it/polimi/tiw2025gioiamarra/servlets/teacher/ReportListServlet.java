@@ -57,7 +57,7 @@ public class ReportListServlet extends HttpServlet {
         request.setAttribute("fragname", "reportList");
         request.setAttribute("fragkind", "teacherFragments");
         request.setAttribute("backLink", "#");
-        ThymeleafUtils.process("generalLayout", request, response, getServletContext());
+        ThymeleafUtils.process(ThymeleafUtils.getRightPath(request), request, response, getServletContext());
 
     }
 

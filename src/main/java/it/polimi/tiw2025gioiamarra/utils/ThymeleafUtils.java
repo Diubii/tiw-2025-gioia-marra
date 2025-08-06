@@ -40,4 +40,9 @@ public class ThymeleafUtils {
         WebContext ctx = new WebContext(webapp.buildExchange(request, response));
         templateEngine.process(path, ctx, response.getWriter());
     }
+
+    public static String getRightPath(HttpServletRequest request) {
+        String async = request.getHeader("X-Fragment-Request");
+        return async != null && async.equals("true") ? "fragmentWrapper" : "generalLayout";
+    }
 }
