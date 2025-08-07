@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" th:with="isStudent=${type.name()=='Student'}"> <!-- th:with necessario così i fragment iniettati qua dentro possono usare isStudent o altre variabili-->
     <body>
         <div th:replace="@{'fragments/'+${fragkind}} :: ${fragname}"></div>
     </body>
