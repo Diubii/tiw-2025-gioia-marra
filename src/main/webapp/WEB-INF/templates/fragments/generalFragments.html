@@ -68,7 +68,7 @@
                     </a>
                     <a
                             th:unless="${isStudent}"
-                            th:href="'/tiw/enrolled-students' + '?course=' + ${course.id()} + '&session=' + ${examSession.id()}+ '&sort=matricola&order=asc'"
+                            th:href="'/tiw/enrolled-students' + '?course=' + ${course.id()} + '&session=' + ${examSession.id()}"
                             th:text="${examSession.dateTime()}">
                     </a>
                     <img

@@ -8,66 +8,38 @@
       <thead class="bg-gray-100">
       <tr>
         <th class="px-6 py-3 text-center text-base font-semibold text-gray-700 uppercase tracking-wider">
-          <a th:href="@{/enrolled-students(course=${param.course}, session=${param.session}, sort='matricola', order=${( param.sort[0]== 'matricola' && param.order[0] == 'asc') ? 'desc' : 'asc'})}" class="inline-flex items-center space-x-1">
+          <a data-sortby="matricola" class="inline-flex items-center space-x-1">
             Matricola
-            <span th:if="${param.sort[0] == 'matricola'}">
-                <img th:if="${param.order[0] == 'desc'}" th:src="@{/static/svg/up.svg}" alt="up" style="width:1em; height:1em;" />
-                <img th:if="${param.order[0] != 'desc'}" th:src="@{/static/svg/down.svg}" alt="down" style="width:1em; height:1em;" />
-            </span>
           </a>
-        </th >
+        </th>
         <th class="px-6 py-3 text-center text-base font-semibold text-gray-700 uppercase tracking-wider">
-          <a th:href="@{/enrolled-students(course=${param.course}, session=${param.session}, sort='cognome', order=${( param.sort[0]== 'cognome' && param.order[0] == 'asc') ? 'desc' : 'asc'})}" class="inline-flex items-center space-x-1">
+          <a data-sortby="cognome" class="inline-flex items-center space-x-1">
             Cognome e nome
-            <span th:if="${param.sort[0] == 'cognome'}">
-                <img th:if="${param.order[0] == 'desc'}" th:src="@{/static/svg/up.svg}" alt="up" style="width:1em; height:1em;" />
-                <img th:if="${param.order[0] != 'desc'}" th:src="@{/static/svg/down.svg}" alt="down" style="width:1em; height:1em;" />
-            </span>
           </a>
         </th>
         <th class="px-6 py-3 text-center text-base font-semibold text-gray-700 uppercase tracking-wider">
-          <a th:href="@{/enrolled-students(course=${param.course}, session=${param.session}, sort='email', order=${( param.sort[0]== 'email' && param.order[0] == 'asc') ? 'desc' : 'asc'})}" class="inline-flex items-center space-x-1">
+          <a data-sortby="email" class="inline-flex items-center space-x-1">
             Email
-            <span th:if="${param.sort[0] == 'email'}">
-                <img th:if="${param.order[0] == 'desc'}" th:src="@{/static/svg/up.svg}" alt="up" style="width:1em; height:1em;" />
-                <img th:if="${param.order[0] != 'desc'}" th:src="@{/static/svg/down.svg}" alt="down" style="width:1em; height:1em;" />
-            </span>
           </a>
         </th>
         <th class="px-6 py-3 text-center text-base font-semibold text-gray-700 uppercase tracking-wider">
-          <a th:href="@{/enrolled-students(course=${param.course}, session=${param.session}, sort='corsoLaurea', order=${( param.sort[0]== 'corsoLaurea' && param.order[0] == 'asc') ? 'desc' : 'asc'})}" class="inline-flex items-center space-x-1">
+          <a data-sortby="corsoLaurea" class="inline-flex items-center space-x-1">
             Corso di laurea
-            <span th:if="${param.sort[0] == 'corsoLaurea'}">
-                <img th:if="${param.order[0] == 'desc'}" th:src="@{/static/svg/up.svg}" alt="up" style="width:1em; height:1em;" />
-                <img th:if="${param.order[0] != 'desc'}" th:src="@{/static/svg/down.svg}" alt="down" style="width:1em; height:1em;" />
-            </span>
           </a>
         </th>
         <th class="px-6 py-3 text-center text-base font-semibold text-gray-700 uppercase tracking-wider">
-          <a th:href="@{/enrolled-students(course=${param.course}, session=${param.session}, sort='voto', order=${( param.sort[0]== 'voto' && param.order[0] == 'asc') ? 'desc' : 'asc'})}" class="inline-flex items-center space-x-1">
+          <a data-sortby="voto" class="inline-flex items-center space-x-1">
             Voto
-            <span th:if="${param.sort[0] == 'voto'}">
-                <img th:if="${param.order[0] == 'desc'}" th:src="@{/static/svg/up.svg}" alt="up" style="width:1em; height:1em;" />
-                <img th:if="${param.order[0] != 'desc'}" th:src="@{/static/svg/down.svg}" alt="down" style="width:1em; height:1em;" />
-            </span>
           </a>
         </th>
         <th class="px-6 py-3 text-center text-base font-semibold text-gray-700 uppercase tracking-wider">
-          <a th:href="@{/enrolled-students(course=${param.course}, session=${param.session}, sort='statoValutazione', order=${( param.sort[0]== 'statoValutazione' && param.order[0] == 'asc') ? 'desc' : 'asc'})}" class="inline-flex items-center space-x-1">
+          <a data-sortby="statoValutazione" class="inline-flex items-center space-x-1">
             Stato valutazione
-            <span th:if="${param.sort[0] == 'statoValutazione'}">
-                <img th:if="${param.order[0] == 'desc'}" th:src="@{/static/svg/up.svg}" alt="up" style="width:1em; height:1em;" />
-                <img th:if="${param.order[0] != 'desc'}" th:src="@{/static/svg/down.svg}" alt="down" style="width:1em; height:1em;" />
-            </span>
           </a>
         </th>
         <th class="px-6 py-3 text-center text-base font-semibold text-gray-700 uppercase tracking-wider">
-          <a th:href="@{/enrolled-students(course=${param.course}, session=${param.session}, sort='idVerbale', order=${( param.sort[0]== 'idVerbale' && param.order[0] == 'asc') ? 'desc' : 'asc'})}" class="inline-flex items-center space-x-1">
+          <a data-sortby="idVerbale" class="inline-flex items-center space-x-1">
             Verbale
-            <span th:if="${param.sort[0] == 'idVerbale'}">
-                <img th:if="${param.order[0] == 'desc'}" th:src="@{/static/svg/up.svg}" alt="up" style="width:1em; height:1em;" />
-                <img th:if="${param.order[0] != 'desc'}" th:src="@{/static/svg/down.svg}" alt="down" style="width:1em; height:1em;" />
-            </span>
           </a>
         </th>
         <th class="px-6 py-3 text-center text-base font-semibold text-gray-700 uppercase tracking-wider">Modifica</th>
@@ -86,6 +58,7 @@
       </tr>
       </tbody>
     </table>
+        <script th:src="@{/static/js/tableSort.js}"></script>
   </div>
 
   <div class="mt-6 flex justify-center space-x-4">
