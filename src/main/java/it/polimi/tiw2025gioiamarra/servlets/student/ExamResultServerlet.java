@@ -22,8 +22,13 @@ public class ExamResultServerlet extends HttpServlet{
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession();
 
+        if(session.getAttribute("student") == null){
+            response.sendRedirect("student-login");
+            return;
+        }
+
         Connection con = Database.getConnection();
-        ArrayList<Integer> appelliIscritto = new ArrayList<Integer>();
+        ArrayList<Integer> appelliIscritto = new ArrayList<>();
 
         try {
             PreparedStatement ps;

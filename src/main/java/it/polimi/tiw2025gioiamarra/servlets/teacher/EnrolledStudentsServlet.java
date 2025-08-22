@@ -76,8 +76,6 @@ public class EnrolledStudentsServlet extends HttpServlet {
                 //System.out.println(enrollment);
                 enrollments.add(enrollment);
 
-
-
             }
         } catch (SQLException e) { //TODO: gestire eccezione
             throw new RuntimeException(e);
@@ -87,6 +85,8 @@ public class EnrolledStudentsServlet extends HttpServlet {
         request.setAttribute("enrollments", enrollments);
         request.setAttribute("GradingStatus", GradingStatus.class);
         request.setAttribute("emptyReport", request.getParameter("emptyReport"));
+        request.setAttribute("grades", ThymeleafUtils.getGrades(con));
+        session.setAttribute("examSession", sessionID);
 
 
         //CONFIGURAZIONE LAYOUT

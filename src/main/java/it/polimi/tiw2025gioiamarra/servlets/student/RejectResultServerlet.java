@@ -16,9 +16,9 @@ import java.sql.SQLException;
 @WebServlet(name="RejectResultServerlet", value="/RejectResult")
 public class RejectResultServerlet extends HttpServlet {
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws  IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession();
-        if(request.getParameter("course") == null || request.getParameter("sessionID") == null) {
+        if(request.getParameter("course") == null || request.getParameter("sessionID") == null || session.getAttribute("student") == null) {
             response.sendRedirect("courses");
             return;
         }
@@ -29,10 +29,8 @@ public class RejectResultServerlet extends HttpServlet {
         int courseID = Integer.parseInt(request.getParameter("course"));
         int examSessionID = Integer.parseInt(request.getParameter("sessionID"));
 
-
-        PreparedStatement ps = null;
         try {
-            ps = con.prepareStatement("UPDATE esame SET statoValutazione = 'Rejected' WHERE esame.matricola = ? AND esame.idAppello = "+examSessionID);
+            PreparedStatement ps = con.prepareStatement("UPDATE esame SET statoValutazione = 'Rejected' WHERE esame.matricola = ? AND esame.idAppello = "+examSessionID);
             ps.setInt(1, (Integer) session.getAttribute("student"));
             ps.execute();
             response.sendRedirect("ExamResult?course=" + courseID + "&session=" + examSessionID+"&sort=matricola&order=asc");
