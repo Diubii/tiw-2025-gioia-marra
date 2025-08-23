@@ -1,10 +1,7 @@
 package it.polimi.tiw2025gioiamarra.servlets.teacher;
 
 
-import it.polimi.tiw2025gioiamarra.items.Enrollment;
-import it.polimi.tiw2025gioiamarra.items.GradingStatus;
-import it.polimi.tiw2025gioiamarra.items.Report;
-import it.polimi.tiw2025gioiamarra.items.Student;
+import it.polimi.tiw2025gioiamarra.items.*;
 import it.polimi.tiw2025gioiamarra.utils.Database;
 import it.polimi.tiw2025gioiamarra.utils.ThymeleafUtils;
 import jakarta.servlet.annotation.WebServlet;
@@ -25,14 +22,18 @@ public class ReportServlet extends HttpServlet{
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession();
-        if (session.getAttribute("type") == null || session.getAttribute("teacher") == null) {
-            response.sendRedirect("teacher-login");
+
+        String[] mandatoryParams = {"session", "report"};
+        if(!ThymeleafUtils.mandatoryParametersCheck(mandatoryParams, PageType.Teacher, session, request, response)) return;
+
+        Connection con = Database.getConnection();
+        if (con == null) {
+            ThymeleafUtils.redirectToDBErrorPage(response);
             return;
         }
 
-        Connection con = Database.getConnection();
-        int reportId = Integer.parseInt(request.getParameter("reportId"));
-        int sessionID = Integer.parseInt(request.getParameter("sessionId"));
+        int reportId = Integer.parseInt(request.getParameter("report"));
+        int sessionID = Integer.parseInt(request.getParameter("session"));
         int courseID;
         ArrayList<Enrollment> enrollments = new ArrayList<>();
 

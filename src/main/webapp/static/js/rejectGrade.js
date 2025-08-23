@@ -1,19 +1,23 @@
 export function init(){
     let bin = document.getElementById("bin");
-    bin.addEventListener("dragover", ev => binDragOver(ev));
-    bin.addEventListener("drop", ev => binDrop(ev));
+    if(bin){
+        bin.addEventListener("dragover", ev => binDragOver(ev));
+        bin.addEventListener("drop", ev => binDrop(ev));
+    }
 
     let cancelButton = document.getElementById("cancelButton");
-    cancelButton.addEventListener("click", ev => cancelButtonClick(ev))
+    if(cancelButton) cancelButton.addEventListener("click", ev => cancelButtonClick(ev))
 }
 
 export function destroy(){
     let bin = document.getElementById("bin");
-    bin.removeEventListener("dragover", ev => binDragOver(ev));
-    bin.removeEventListener("drop", ev => binDrop(ev));
+    if(bin) {
+        bin.removeEventListener("dragover", ev => binDragOver(ev));
+        bin.removeEventListener("drop", ev => binDrop(ev));
+    }
 
     let cancelButton = document.getElementById("cancelButton");
-    cancelButton.removeEventListener("click", ev => cancelButtonClick(ev));
+    if(cancelButton) cancelButton.removeEventListener("click", ev => cancelButtonClick(ev));
 }
 
 function binDragOver(event){

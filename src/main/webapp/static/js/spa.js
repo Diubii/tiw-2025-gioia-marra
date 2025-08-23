@@ -38,6 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (!response.ok) throw new Error("Error while fetching fragment: " + response.text);
             }
 
+            enableElement(link);
             replaceFragment(await response.text(), url);
         } catch (e) {
             console.error("SPA error:", e);
@@ -63,6 +64,24 @@ function disableElement(el) {
         // per altri elementi generici
         el.style.pointerEvents = 'none';
         el.style.opacity = '0.5';
+    }
+}
+
+function enableElement(el) {
+    if (!el) return;
+
+    const tag = el.tagName.toLowerCase();
+
+    if (tag === 'button' || tag === 'input' || tag === 'select' || tag === 'textarea') {
+        el.disabled = false;
+    } else if (tag === 'a') {
+        if (el.dataset.hrefBackup) el.href = el.dataset.hrefBackup; // ripristina href
+        el.removeAttribute("data-href-backup");
+        el.style.pointerEvents = 'auto';
+        el.style.opacity = '1';
+    } else {
+        el.style.pointerEvents = 'auto';
+        el.style.opacity = '1';
     }
 }
 

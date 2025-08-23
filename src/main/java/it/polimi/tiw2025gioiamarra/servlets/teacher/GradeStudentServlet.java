@@ -2,6 +2,7 @@ package it.polimi.tiw2025gioiamarra.servlets.teacher;
 
 import it.polimi.tiw2025gioiamarra.items.Enrollment;
 import it.polimi.tiw2025gioiamarra.items.GradingStatus;
+import it.polimi.tiw2025gioiamarra.items.PageType;
 import it.polimi.tiw2025gioiamarra.items.Student;
 import it.polimi.tiw2025gioiamarra.utils.Database;
 import it.polimi.tiw2025gioiamarra.utils.ThymeleafUtils;
@@ -18,15 +19,16 @@ public class GradeStudentServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession();
-        if (request.getParameter("student") == null || request.getParameter("course") == null || request.getParameter("session") == null || session.getAttribute("teacher") == null) {
-            response.sendRedirect("courses");
-            return;
-        }
+
+        String[] mandatoryParams = {"course", "session", "student"};
+        if(!ThymeleafUtils.mandatoryParametersCheck(mandatoryParams, PageType.Teacher, session, request, response)) return;
 
         Connection con = Database.getConnection();
         if (con == null) {
+            ThymeleafUtils.redirectToDBErrorPage(response);
             return;
         }
+
         try {
             PreparedStatement ps = con.prepareStatement("SELECT matricola, cognome, studente.nome, email, corsoLaurea, voto, statoValutazione, idAppello FROM esame NATURAL JOIN iscrizioneCorso NATURAL JOIN studente JOIN corso on iscrizioneCorso.idCorso = corso.idCorso WHERE studente.matricola = ? AND corso.idCorso = ? AND idAppello = ? AND codiceDocente = ?");
             int studentNumber = Integer.parseInt(request.getParameter("student"));
@@ -94,10 +96,11 @@ public class GradeStudentServlet extends HttpServlet {
 
         try {
             //Aggiorno il voto e lo stato
-            PreparedStatement ps = con.prepareStatement("UPDATE esame SET voto=?, statoValutazione=? WHERE matricola=? AND idAppello=?"); //TODO: Rendere più sicura questa query, lo studente ha come docente lo stesso che vuole modificare il suo voto?
+            PreparedStatement ps = con.prepareStatement("UPDATE esame NATURAL JOIN appello NATURAL JOIN corso SET voto=?, statoValutazione=? WHERE matricola=? AND idAppello=? AND codiceDocente=?");
             String[] grades = request.getParameterValues("grades");
             String[] students = request.getParameterValues("studentNumbers");
             int examSession = (Integer) session.getAttribute("examSession");
+            int teacher = (Integer) session.getAttribute("teacher");
 
             for (int i = 0; i < grades.length; i++) {
                 if (grades[i] == null || grades[i].isBlank() || students[i] == null || students[i].isBlank()) continue;
@@ -110,6 +113,7 @@ public class GradeStudentServlet extends HttpServlet {
                 else ps.setString(2, GradingStatus.NotInserted.name());
                 ps.setInt(3, student);
                 ps.setInt(4, examSession);
+                ps.setInt(5, teacher);
                 ps.addBatch();
             }
             ps.executeBatch();

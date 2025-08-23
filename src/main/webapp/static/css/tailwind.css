@@ -8,6 +8,8 @@
     'Noto Color Emoji';
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
     monospace;
+    --color-red-100: oklch(93.6% 0.032 17.717);
+    --color-red-200: oklch(88.5% 0.062 18.334);
     --color-red-500: oklch(63.7% 0.237 25.331);
     --color-red-600: oklch(57.7% 0.245 27.325);
     --color-red-700: oklch(50.5% 0.213 27.518);
@@ -16,6 +18,7 @@
     --color-yellow-700: oklch(55.4% 0.135 66.442);
     --color-green-600: oklch(62.7% 0.194 149.214);
     --color-blue-300: oklch(80.9% 0.105 251.813);
+    --color-blue-600: oklch(54.6% 0.245 262.881);
     --color-blue-700: oklch(48.8% 0.243 264.376);
     --color-blue-800: oklch(42.4% 0.199 265.638);
     --color-indigo-500: oklch(58.5% 0.233 277.117);
@@ -39,6 +42,8 @@
     --text-sm--line-height: calc(1.25 / 0.875);
     --text-base: 1rem;
     --text-base--line-height: calc(1.5 / 1);
+    --text-xl: 1.25rem;
+    --text-xl--line-height: calc(1.75 / 1.25);
     --text-3xl: 1.875rem;
     --text-3xl--line-height: calc(2.25 / 1.875);
     --font-weight-medium: 500;
@@ -262,6 +267,9 @@
   .h-full {
     height: 100%;
   }
+  .h-screen {
+    height: 100vh;
+  }
   .min-h-screen {
     min-height: 100vh;
   }
@@ -270,6 +278,9 @@
   }
   .w-full {
     width: 100%;
+  }
+  .w-screen {
+    width: 100vw;
   }
   .w-xl {
     width: var(--container-xl);
@@ -382,6 +393,9 @@
   .bg-purple-700 {
     background-color: var(--color-purple-700);
   }
+  .bg-red-100 {
+    background-color: var(--color-red-100);
+  }
   .bg-red-600 {
     background-color: var(--color-red-600);
   }
@@ -442,6 +456,10 @@
     font-size: var(--text-sm);
     line-height: var(--tw-leading, var(--text-sm--line-height));
   }
+  .text-xl {
+    font-size: var(--text-xl);
+    line-height: var(--tw-leading, var(--text-xl--line-height));
+  }
   .font-bold {
     --tw-font-weight: var(--font-weight-bold);
     font-weight: var(--font-weight-bold);
@@ -460,6 +478,9 @@
   }
   .whitespace-nowrap {
     white-space: nowrap;
+  }
+  .text-blue-600 {
+    color: var(--color-blue-600);
   }
   .text-gray-700 {
     color: var(--color-gray-700);
@@ -524,6 +545,13 @@
     &:hover {
       @media (hover: hover) {
         background-color: var(--color-yellow-700);
+      }
+    }
+  }
+  .hover\:text-blue-800 {
+    &:hover {
+      @media (hover: hover) {
+        color: var(--color-blue-800);
       }
     }
   }

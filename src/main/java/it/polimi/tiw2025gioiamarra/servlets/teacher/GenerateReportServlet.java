@@ -1,6 +1,8 @@
 package it.polimi.tiw2025gioiamarra.servlets.teacher;
 
+import it.polimi.tiw2025gioiamarra.items.PageType;
 import it.polimi.tiw2025gioiamarra.utils.Database;
+import it.polimi.tiw2025gioiamarra.utils.ThymeleafUtils;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,15 +25,22 @@ public class GenerateReportServlet extends HttpServlet{
     //altrimenti ritorna a li con error 1 magari
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession();
-        if (session.getAttribute("type") == null || session.getAttribute("teacher") == null) {
-            response.sendRedirect("teacher-login");
+
+        String[] mandatoryParams = {"course", "session"};
+        if(!ThymeleafUtils.mandatoryParametersCheck(mandatoryParams, PageType.Teacher, session, request, response)) return;
+
+        Connection con = Database.getConnection();
+        if (con == null) {
+            ThymeleafUtils.redirectToDBErrorPage(response);
             return;
         }
 
-        Connection con = Database.getConnection();
         PreparedStatement psInsert = null;
         PreparedStatement psUpdate = null;
         ResultSet rs = null;
+
+        int courseID = Integer.parseInt(request.getParameter("course"));
+        int sessionID = Integer.parseInt(request.getParameter("session"));
 
         //Faccio transazione, annullo se non ho associato nessun voto
         try {
@@ -39,8 +48,7 @@ public class GenerateReportServlet extends HttpServlet{
 
             //Inserisco Verbale
             psInsert = con.prepareStatement("INSERT INTO `verbale` (`idVerbale`, `dataOra`, `idAppello`) VALUES (NULL, NOW(), ?);", Statement.RETURN_GENERATED_KEYS);
-            int sessionId = Integer.parseInt(request.getParameter("session"));
-            psInsert.setInt(1, sessionId);
+            psInsert.setInt(1, sessionID);
             psInsert.executeUpdate();
 
             rs = psInsert.getGeneratedKeys();
@@ -67,11 +75,11 @@ public class GenerateReportServlet extends HttpServlet{
             if (updated > 0) {
                 con.commit();
                 //redirigo
-                response.sendRedirect("report?reportId=" + idVerbale + "&sessionId=" + sessionId);
+                response.sendRedirect("report?reportId=" + idVerbale + "&sessionId=" + sessionID);
             } else {
                 con.rollback();
                 //redirigo con avviso
-                response.sendRedirect("enrolled-students?course=" + Integer.parseInt(request.getParameter("course")) + "&session=" + sessionId+"&sort=matricola&order=asc&emptyReport=1");
+                response.sendRedirect("enrolled-students?course=" + courseID + "&session=" + sessionID +"&sort=matricola&order=asc&emptyReport=1");
             }
 
         } catch (Exception e) {
