@@ -38,13 +38,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (!response.ok) throw new Error("Error while fetching fragment: " + response.text);
             }
 
-            enableElement(link);
             replaceFragment(await response.text(), url);
         } catch (e) {
             console.error("SPA error:", e);
         }
 
-        link.disabled = false;
+        enableElement(link);
     })
 })
 
@@ -128,6 +127,15 @@ export function destroyCurrentFragment(){
 export function replaceFragment(html, url){
     destroyCurrentFragment();
     document.getElementById("fragment-container").innerHTML = html;
+
+    let pageTitleSPA = document.getElementById("pageTitleSPA")
+    document.getElementById("pageTitle").textContent = pageTitleSPA.textContent;
+    pageTitleSPA.remove();
+
+    let backlinkSPA = document.getElementById("backlinkSPA");
+    document.getElementById("backlink").href = backlinkSPA.href;
+    backlinkSPA.remove();
+
     history.pushState(null, "", url);
     executeScripts();
 }

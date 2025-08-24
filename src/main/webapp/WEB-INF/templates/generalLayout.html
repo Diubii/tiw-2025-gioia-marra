@@ -13,7 +13,7 @@
 
         <main class="grow flex-col items-center text-center px-4 py-8 w-full">
             <header>
-                <h1 th:text="${pageTitle}" class="px-6 py-3 text-center font-semibold text-gray-700 uppercase tracking-wider">Titolo</h1>
+                <h1 id="pageTitle" th:text="${pageTitle}" class="px-6 py-3 text-center font-semibold text-gray-700 uppercase tracking-wider">Titolo</h1>
             </header>
 
             <div id="fragment-container" th:insert="@{'fragments/'+${fragkind}} :: ${fragname}"></div>

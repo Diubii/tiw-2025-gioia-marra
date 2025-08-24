@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" th:with="isStudent=${type.name()=='Student'}"> <!-- th:with necessario così i fragment iniettati qua dentro possono usare isStudent o altre variabili-->
     <body>
+        <a id="backlinkSPA" th:if="${backLink}" th:href="${backLink}" hidden></a>
+        <h1 id="pageTitleSPA" th:text="${pageTitle}" hidden>Titolo</h1>
         <div th:replace="@{'fragments/'+${fragkind}} :: ${fragname}"></div>
     </body>
 </html>
