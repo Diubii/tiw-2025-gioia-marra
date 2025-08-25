@@ -37,7 +37,7 @@ public class ReportServlet extends HttpServlet{
         int courseID;
         ArrayList<Enrollment> enrollments = new ArrayList<>();
 
-        Report report=null;
+        Report report;
         try {
 
             PreparedStatement ps = con.prepareStatement("SELECT idVerbale,verbale.dataOra AS dataVerbale, appello.dataOra AS dataAppello,nome,appello.idAppello AS idAppello ,corso.idCorso AS idCorso FROM corso JOIN appello ON corso.idCorso = appello.idCorso JOIN verbale ON verbale.idAppello = appello.idAppello WHERE idVerbale=? AND appello.idAppello=?");
@@ -68,6 +68,10 @@ public class ReportServlet extends HttpServlet{
                     //System.out.println(enrollment);
                     enrollments.add(enrollment);
                 }
+            }
+            else{
+                response.sendRedirect("report-list");
+                return;
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
