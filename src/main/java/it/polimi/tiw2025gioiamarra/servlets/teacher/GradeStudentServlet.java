@@ -30,7 +30,7 @@ public class GradeStudentServlet extends HttpServlet {
         }
 
         try {
-            PreparedStatement ps = con.prepareStatement("SELECT matricola, cognome, studente.nome, email, corsoLaurea, voto, statoValutazione, idAppello FROM esame NATURAL JOIN iscrizioneCorso NATURAL JOIN studente JOIN corso on iscrizioneCorso.idCorso = corso.idCorso WHERE studente.matricola = ? AND corso.idCorso = ? AND idAppello = ? AND codiceDocente = ?");
+            PreparedStatement ps = con.prepareStatement("SELECT matricola, cognome, studente.nome, email, corsoLaurea, voto, statoValutazione, idAppello FROM esame NATURAL JOIN iscrizioneCorso NATURAL JOIN studente JOIN corso on iscrizioneCorso.idCorso = corso.idCorso WHERE studente.matricola = ? AND corso.idCorso = ? AND idAppello = ? AND codiceDocente = ? AND (statoValutazione = ? OR statoValutazione = ?)");
             int studentNumber = Integer.parseInt(request.getParameter("student"));
             int courseID = Integer.parseInt(request.getParameter("course"));
             int examSessionID = Integer.parseInt(request.getParameter("session"));
@@ -39,6 +39,8 @@ public class GradeStudentServlet extends HttpServlet {
             ps.setInt(2, courseID);
             ps.setInt(3, examSessionID);
             ps.setInt(4, teacherID);
+            ps.setString(5, GradingStatus.NotInserted.toString());
+            ps.setString(6, GradingStatus.Inserted.toString());
             ResultSet rs = ps.executeQuery();
             Enrollment enrollment;
             if (rs.next()) {
@@ -68,7 +70,7 @@ public class GradeStudentServlet extends HttpServlet {
                 ThymeleafUtils.process(ThymeleafUtils.getRightPath(request), request, response, getServletContext());
 
             } else {
-                response.sendRedirect("courses");
+                response.sendRedirect("enrolled-students?course=" + courseID + "&session=" + examSessionID);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -96,7 +98,7 @@ public class GradeStudentServlet extends HttpServlet {
 
         try {
             //Aggiorno il voto e lo stato
-            PreparedStatement ps = con.prepareStatement("UPDATE esame NATURAL JOIN appello NATURAL JOIN corso SET voto=?, statoValutazione=? WHERE matricola=? AND idAppello=? AND codiceDocente=?");
+            PreparedStatement ps = con.prepareStatement("UPDATE esame NATURAL JOIN appello NATURAL JOIN corso SET voto=?, statoValutazione=? WHERE matricola=? AND idAppello=? AND codiceDocente=? AND (statoValutazione=? OR statoValutazione=?)");
             String[] grades = request.getParameterValues("grades");
             String[] students = request.getParameterValues("studentNumbers");
             int examSession = (Integer) session.getAttribute("examSession");
@@ -114,6 +116,8 @@ public class GradeStudentServlet extends HttpServlet {
                 ps.setInt(3, student);
                 ps.setInt(4, examSession);
                 ps.setInt(5, teacher);
+                ps.setString(6, GradingStatus.NotInserted.toString());
+                ps.setString(7, GradingStatus.Inserted.toString());
                 ps.addBatch();
             }
             ps.executeBatch();

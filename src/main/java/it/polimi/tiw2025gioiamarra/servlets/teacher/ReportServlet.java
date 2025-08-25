@@ -34,15 +34,17 @@ public class ReportServlet extends HttpServlet{
 
         int reportId = Integer.parseInt(request.getParameter("report"));
         int sessionID = Integer.parseInt(request.getParameter("session"));
+        int teacherID = (Integer) session.getAttribute("teacher");
         int courseID;
         ArrayList<Enrollment> enrollments = new ArrayList<>();
 
         Report report;
         try {
 
-            PreparedStatement ps = con.prepareStatement("SELECT idVerbale,verbale.dataOra AS dataVerbale, appello.dataOra AS dataAppello,nome,appello.idAppello AS idAppello ,corso.idCorso AS idCorso FROM corso JOIN appello ON corso.idCorso = appello.idCorso JOIN verbale ON verbale.idAppello = appello.idAppello WHERE idVerbale=? AND appello.idAppello=?");
+            PreparedStatement ps = con.prepareStatement("SELECT idVerbale,verbale.dataOra AS dataVerbale, appello.dataOra AS dataAppello,nome,appello.idAppello AS idAppello ,corso.idCorso AS idCorso FROM corso JOIN appello ON corso.idCorso = appello.idCorso JOIN verbale ON verbale.idAppello = appello.idAppello WHERE idVerbale=? AND appello.idAppello=? AND corso.codiceDocente=?");
             ps.setInt(1, reportId);
             ps.setInt(2, sessionID);
+            ps.setInt(3, teacherID);
 
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {

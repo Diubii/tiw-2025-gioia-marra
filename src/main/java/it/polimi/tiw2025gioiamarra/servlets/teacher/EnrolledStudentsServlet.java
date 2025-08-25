@@ -57,34 +57,37 @@ public class EnrolledStudentsServlet extends HttpServlet {
 
         int courseID = Integer.parseInt(request.getParameter("course"));
         int sessionID = Integer.parseInt(request.getParameter("session"));
+        int teacherID = (Integer) session.getAttribute( "teacher");
 
         try {
 
-            PreparedStatement ps = con.prepareStatement("SELECT matricola, cognome, nome, email, corsoLaurea, voto, statoValutazione, idVerbale, idAppello FROM esame NATURAL JOIN iscrizioneCorso NATURAL JOIN studente WHERE idCorso = ? && idAppello = ? ORDER BY ? ?");
+            PreparedStatement ps = con.prepareStatement("SELECT matricola, cognome, studente.nome, email, corsoLaurea, voto, statoValutazione, idVerbale, idAppello FROM esame NATURAL JOIN iscrizioneCorso NATURAL JOIN studente JOIN corso ON iscrizioneCorso.idCorso = corso.idCorso WHERE corso.idCorso = ? AND idAppello = ? AND codiceDocente = ? ORDER BY ? ?");
             ps.setInt(1, courseID);
             ps.setInt(2, sessionID);
-            ps.setString(3, sort);
-            ps.setString(4, sortDirection);
+            ps.setInt(3, teacherID);
+            ps.setString(4, sort);
+            ps.setString(5, sortDirection);
             ResultSet rs = ps.executeQuery();
 
             if(!rs.next()) {
                 response.sendRedirect("exam-sessions?course=" + courseID);
                 return;
             }
-
-            while (rs.next()) {
-                int studentNumber = Integer.parseInt(rs.getString("matricola"));
-                String studentName =  rs.getString("nome");
-                String studentSurname = rs.getString("cognome");
-                String studentEmail = rs.getString("email");
-                String degreeCourse = rs.getString("corsoLaurea");
-                String grade = rs.getString("voto");
-                GradingStatus gradingStatus = GradingStatus.valueOf(rs.getString("statoValutazione"));
-                String verbalID = rs.getString("idVerbale");
-                Student student = new Student(studentNumber, studentName, studentSurname, studentEmail, degreeCourse);
-                Enrollment enrollment = new Enrollment(student, grade, gradingStatus, verbalID, courseID, sessionID);
-                //System.out.println(enrollment);
-                enrollments.add(enrollment);
+            else{
+                do {
+                    int studentNumber = Integer.parseInt(rs.getString("matricola"));
+                    String studentName = rs.getString("nome");
+                    String studentSurname = rs.getString("cognome");
+                    String studentEmail = rs.getString("email");
+                    String degreeCourse = rs.getString("corsoLaurea");
+                    String grade = rs.getString("voto");
+                    GradingStatus gradingStatus = GradingStatus.valueOf(rs.getString("statoValutazione"));
+                    String verbalID = rs.getString("idVerbale");
+                    Student student = new Student(studentNumber, studentName, studentSurname, studentEmail, degreeCourse);
+                    Enrollment enrollment = new Enrollment(student, grade, gradingStatus, verbalID, courseID, sessionID);
+                    //System.out.println(enrollment);
+                    enrollments.add(enrollment);
+                } while (rs.next());
             }
         } catch (SQLException e) {
             ThymeleafUtils.redirectToDBErrorPage(response);

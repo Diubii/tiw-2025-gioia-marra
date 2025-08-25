@@ -41,8 +41,9 @@ public class ExamSessionsServlet extends HttpServlet {
         ArrayList<Integer> appelliIscritto = new ArrayList<Integer>();
         Course course;
         try {
-            ps = con.prepareStatement("SELECT * FROM corso WHERE idCorso = ?");
+            ps = con.prepareStatement("SELECT * FROM corso WHERE idCorso = ? AND codiceDocente = ?");
             ps.setInt(1, Integer.parseInt(request.getParameter("course")));
+            ps.setInt(2, (Integer) session.getAttribute("teacher"));
             rs = ps.executeQuery();
             if (rs.next()) {
                 course = new Course(rs.getInt("idCorso"), rs.getString("nome"));
