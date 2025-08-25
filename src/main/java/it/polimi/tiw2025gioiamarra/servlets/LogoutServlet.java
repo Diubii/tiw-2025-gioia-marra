@@ -14,9 +14,9 @@ public class LogoutServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
-        Boolean student=false;
-        if(request.getSession().getAttribute("type").equals(LoginType.Student)) {
+        Object type = request.getSession().getAttribute("type");
+        boolean student = false;
+        if(type != null && type.equals(LoginType.Student)) {
             student = true;
         }
 

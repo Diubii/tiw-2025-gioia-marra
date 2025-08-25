@@ -3,6 +3,7 @@ package it.polimi.tiw2025gioiamarra.servlets;
 import it.polimi.tiw2025gioiamarra.items.Course;
 import it.polimi.tiw2025gioiamarra.items.ExamSession;
 import it.polimi.tiw2025gioiamarra.items.LoginType;
+import it.polimi.tiw2025gioiamarra.items.PageType;
 import it.polimi.tiw2025gioiamarra.utils.Database;
 import it.polimi.tiw2025gioiamarra.utils.ThymeleafUtils;
 import jakarta.servlet.annotation.WebServlet;
@@ -23,12 +24,17 @@ public class ExamSessionsServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession();
-        if((session.getAttribute("teacher") == null && session.getAttribute("student") == null) || session.getAttribute("type") == null ||  request.getParameter("course") == null) {
-            response.sendRedirect("courses");
+
+        String[] mandatoryParams = {"course"};
+        if(!ThymeleafUtils.mandatoryParametersCheck(mandatoryParams, PageType.Common, session, request, response)) return;
+
+        Connection con = Database.getConnection();
+
+        if (con == null) {
+            ThymeleafUtils.redirectToDBErrorPage(response);
             return;
         }
 
-        Connection con = Database.getConnection();
         PreparedStatement ps;
         ResultSet rs;
         ArrayList<ExamSession> examSessions = new ArrayList<>();
@@ -89,7 +95,7 @@ public class ExamSessionsServlet extends HttpServlet {
         request.setAttribute("fragname", "examsessions");
         request.setAttribute("fragkind", "generalFragments");
         request.setAttribute("backLink", "/courses");
-        ThymeleafUtils.process("generalLayout", request, response, getServletContext());
 
+        ThymeleafUtils.process(ThymeleafUtils.getRightPath(request), request, response, getServletContext());
     }
 }

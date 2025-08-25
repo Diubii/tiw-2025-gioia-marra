@@ -16,10 +16,11 @@ import java.sql.*;
 @WebServlet(name = "loginServlet", value = "/login")
 public class LoginServlet extends HttpServlet {
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Connection con = Database.getConnection();
         if (con == null) {
             System.err.println("Couldn't establish a connection to the database.");
+            response.sendRedirect("student-login");
             return;
         }
 

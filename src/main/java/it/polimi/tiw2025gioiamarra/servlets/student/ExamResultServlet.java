@@ -16,14 +16,24 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-@WebServlet(name="ExamResultServerlet", value = "/ExamResult")
-public class ExamResultServerlet extends HttpServlet{
+@WebServlet(name="ExamResultServlet", value = "/ExamResult")
+public class ExamResultServlet extends HttpServlet{
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession();
 
+        String[] mandatoryParams = {"course", "session"};
+        if(!ThymeleafUtils.mandatoryParametersCheck(mandatoryParams, PageType.Student, session, request, response)) return;
+
+        String courseID = request.getParameter("course");
+
         Connection con = Database.getConnection();
-        ArrayList<Integer> appelliIscritto = new ArrayList<Integer>();
+        if (con == null) {
+            ThymeleafUtils.redirectToDBErrorPage(response);
+            return;
+        }
+
+        ArrayList<Integer> appelliIscritto = new ArrayList<>();
 
         try {
             PreparedStatement ps;
@@ -41,10 +51,9 @@ public class ExamResultServerlet extends HttpServlet{
 
             ps = con.prepareStatement("SELECT matricola, cognome, studente.nome, email, corsoLaurea, voto, statoValutazione, esame.idAppello , corso.idCorso, corso.nome AS nomeCorso , dataOra  FROM esame NATURAL JOIN iscrizioneCorso NATURAL JOIN studente JOIN corso on iscrizioneCorso.idCorso = corso.idCorso JOIN appello ON appello.idAppello = esame.idAppello WHERE studente.matricola = ? AND corso.idCorso = ? AND esame.idAppello = ? ");
             int studentNumber = (int) session.getAttribute("student");
-            int courseID = Integer.parseInt(request.getParameter("course"));
             int examSessionID = Integer.parseInt(request.getParameter("session"));
             ps.setInt(1, studentNumber);
-            ps.setInt(2, courseID);
+            ps.setInt(2, Integer.parseInt(courseID));
             ps.setInt(3, examSessionID);
             rs = ps.executeQuery();
             Enrollment enrollment;
@@ -56,7 +65,7 @@ public class ExamResultServerlet extends HttpServlet{
                 String grade = rs.getString("voto");
                 GradingStatus gradingStatus = GradingStatus.valueOf(rs.getString("statoValutazione"));
                 Student student = new Student(studentNumber, studentName, studentSurname, studentEmail, degreeCourse);
-                enrollment = new Enrollment(student, grade, gradingStatus, null, courseID, examSessionID);
+                enrollment = new Enrollment(student, grade, gradingStatus, null, Integer.parseInt(courseID), examSessionID);
                 request.setAttribute("enrollment", enrollment);
                 //Course
                 Course course;
@@ -80,7 +89,7 @@ public class ExamResultServerlet extends HttpServlet{
                 request.setAttribute("fragname", "examresult");
                 request.setAttribute("fragkind", "studentFragments");
                 request.setAttribute("backLink", "exam-sessions?course=" + courseID);
-                ThymeleafUtils.process("generalLayout", request, response, getServletContext());
+                ThymeleafUtils.process(ThymeleafUtils.getRightPath(request), request, response, getServletContext());
 
             }
             else{

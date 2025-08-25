@@ -1,9 +1,6 @@
 package it.polimi.tiw2025gioiamarra.servlets.teacher;
 
-import it.polimi.tiw2025gioiamarra.items.Enrollment;
-import it.polimi.tiw2025gioiamarra.items.ExamSession;
-import it.polimi.tiw2025gioiamarra.items.GradingStatus;
-import it.polimi.tiw2025gioiamarra.items.Student;
+import it.polimi.tiw2025gioiamarra.items.*;
 import it.polimi.tiw2025gioiamarra.utils.Database;
 import it.polimi.tiw2025gioiamarra.utils.ThymeleafUtils;
 import jakarta.servlet.annotation.WebServlet;
@@ -27,16 +24,21 @@ import org.thymeleaf.context.Context;
 public class EnrolledStudentsServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession();
-        if (session.getAttribute("type") == null || session.getAttribute("teacher") == null) {
-            response.sendRedirect("teacher-login");
+
+        String[] mandatoryParams = {"course", "session"};
+        if(!ThymeleafUtils.mandatoryParametersCheck(mandatoryParams, PageType.Teacher, session, request, response)) return;
+
+        Connection con = Database.getConnection();
+        if (con == null) {
+            ThymeleafUtils.redirectToDBErrorPage(response);
             return;
         }
 
-        Connection con = Database.getConnection();
         ArrayList<Enrollment> enrollments = new ArrayList<>();
 
         //Handling order by selected column
         String sort = request.getParameter("sort");
+        sort = sort == null ? "matricola" : sort;
         Map<String, String> validSortFields = new HashMap<>();
         validSortFields.put("matricola", "matricola");
         validSortFields.put("cognome", "cognome");
@@ -58,10 +60,18 @@ public class EnrolledStudentsServlet extends HttpServlet {
 
         try {
 
-            PreparedStatement ps = con.prepareStatement("SELECT matricola, cognome, nome, email, corsoLaurea, voto, statoValutazione, idVerbale, idAppello FROM esame NATURAL JOIN iscrizioneCorso NATURAL JOIN studente WHERE idCorso = ? && idAppello = ? ORDER BY "+orderBy+" "+sortDirection);
+            PreparedStatement ps = con.prepareStatement("SELECT matricola, cognome, nome, email, corsoLaurea, voto, statoValutazione, idVerbale, idAppello FROM esame NATURAL JOIN iscrizioneCorso NATURAL JOIN studente WHERE idCorso = ? && idAppello = ? ORDER BY ? ?");
             ps.setInt(1, courseID);
             ps.setInt(2, sessionID);
+            ps.setString(3, sort);
+            ps.setString(4, sortDirection);
             ResultSet rs = ps.executeQuery();
+
+            if(!rs.next()) {
+                response.sendRedirect("exam-sessions?course=" + courseID);
+                return;
+            }
+
             while (rs.next()) {
                 int studentNumber = Integer.parseInt(rs.getString("matricola"));
                 String studentName =  rs.getString("nome");
@@ -75,18 +85,17 @@ public class EnrolledStudentsServlet extends HttpServlet {
                 Enrollment enrollment = new Enrollment(student, grade, gradingStatus, verbalID, courseID, sessionID);
                 //System.out.println(enrollment);
                 enrollments.add(enrollment);
-
-
-
             }
-        } catch (SQLException e) { //TODO: gestire eccezione
-            throw new RuntimeException(e);
+        } catch (SQLException e) {
+            ThymeleafUtils.redirectToDBErrorPage(response);
         }
 
         //CONFIGURAZIONE PARAMETRI SPECIFICI PER LA PAGINA
         request.setAttribute("enrollments", enrollments);
         request.setAttribute("GradingStatus", GradingStatus.class);
         request.setAttribute("emptyReport", request.getParameter("emptyReport"));
+        request.setAttribute("grades", ThymeleafUtils.getGrades(con));
+        session.setAttribute("examSession", sessionID);
 
 
         //CONFIGURAZIONE LAYOUT
@@ -95,7 +104,7 @@ public class EnrolledStudentsServlet extends HttpServlet {
         request.setAttribute("fragname", "enrolledstudents");
         request.setAttribute("fragkind", "teacherFragments");
         request.setAttribute("backLink", "exam-sessions?course=" + courseID);
-        ThymeleafUtils.process("generalLayout", request, response, getServletContext());
+        ThymeleafUtils.process(ThymeleafUtils.getRightPath(request), request, response, getServletContext());
 
 
     }
