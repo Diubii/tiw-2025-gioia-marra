@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.dbutils.DbUtils;
 import org.thymeleaf.context.Context;
 
 @WebServlet(name="enrolledStudentsServlet", value="/enrolled-students")
@@ -59,19 +60,19 @@ public class EnrolledStudentsServlet extends HttpServlet {
         int sessionID = Integer.parseInt(request.getParameter("session"));
         int teacherID = (Integer) session.getAttribute( "teacher");
 
+        PreparedStatement ps = null;
+        ResultSet rs = null;
         try {
-
-            PreparedStatement ps = con.prepareStatement("SELECT matricola, cognome, studente.nome, email, corsoLaurea, voto, statoValutazione, idVerbale, idAppello FROM esame NATURAL JOIN iscrizioneCorso NATURAL JOIN studente JOIN corso ON iscrizioneCorso.idCorso = corso.idCorso WHERE corso.idCorso = ? AND idAppello = ? AND codiceDocente = ? ORDER BY ? ?");
+            ps = con.prepareStatement("SELECT matricola, cognome, studente.nome, email, corsoLaurea, voto, statoValutazione, idVerbale, idAppello FROM esame NATURAL JOIN iscrizioneCorso NATURAL JOIN studente JOIN corso ON iscrizioneCorso.idCorso = corso.idCorso WHERE corso.idCorso = ? AND idAppello = ? AND codiceDocente = ? ORDER BY ? ?");
             ps.setInt(1, courseID);
             ps.setInt(2, sessionID);
             ps.setInt(3, teacherID);
             ps.setString(4, sort);
             ps.setString(5, sortDirection);
-            ResultSet rs = ps.executeQuery();
 
+            rs = ps.executeQuery();
             if(!rs.next()) {
                 response.sendRedirect("exam-sessions?course=" + courseID);
-                return;
             }
             else{
                 do {
@@ -88,27 +89,32 @@ public class EnrolledStudentsServlet extends HttpServlet {
                     //System.out.println(enrollment);
                     enrollments.add(enrollment);
                 } while (rs.next());
+
+
+                //CONFIGURAZIONE PARAMETRI SPECIFICI PER LA PAGINA
+                request.setAttribute("enrollments", enrollments);
+                request.setAttribute("GradingStatus", GradingStatus.class);
+                request.setAttribute("emptyReport", request.getParameter("emptyReport"));
+                request.setAttribute("grades", ThymeleafUtils.getGrades(con));
+                session.setAttribute("examSession", sessionID);
+
+
+                //CONFIGURAZIONE LAYOUT
+                request.setAttribute("type", session.getAttribute("type"));
+                request.setAttribute("pageTitle", "Studenti iscritti");
+                request.setAttribute("fragname", "enrolledstudents");
+                request.setAttribute("fragkind", "teacherFragments");
+                request.setAttribute("backLink", "exam-sessions?course=" + courseID);
+                ThymeleafUtils.process(ThymeleafUtils.getRightPath(request), request, response, getServletContext());
+
             }
         } catch (SQLException e) {
             ThymeleafUtils.redirectToDBErrorPage(response);
         }
-
-        //CONFIGURAZIONE PARAMETRI SPECIFICI PER LA PAGINA
-        request.setAttribute("enrollments", enrollments);
-        request.setAttribute("GradingStatus", GradingStatus.class);
-        request.setAttribute("emptyReport", request.getParameter("emptyReport"));
-        request.setAttribute("grades", ThymeleafUtils.getGrades(con));
-        session.setAttribute("examSession", sessionID);
-
-
-        //CONFIGURAZIONE LAYOUT
-        request.setAttribute("type", session.getAttribute("type"));
-        request.setAttribute("pageTitle", "Studenti iscritti");
-        request.setAttribute("fragname", "enrolledstudents");
-        request.setAttribute("fragkind", "teacherFragments");
-        request.setAttribute("backLink", "exam-sessions?course=" + courseID);
-        ThymeleafUtils.process(ThymeleafUtils.getRightPath(request), request, response, getServletContext());
-
-
+        finally {
+            DbUtils.closeQuietly(rs);
+            DbUtils.closeQuietly(ps);
+            DbUtils.closeQuietly(con);
+        }
     }
 }

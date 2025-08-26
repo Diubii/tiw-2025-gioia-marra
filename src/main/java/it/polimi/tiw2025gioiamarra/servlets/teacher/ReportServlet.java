@@ -17,6 +17,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import org.apache.commons.dbutils.DbUtils;
+
 @WebServlet(name="ReportServlet", value="/report")
 public class ReportServlet extends HttpServlet{
 
@@ -39,19 +41,22 @@ public class ReportServlet extends HttpServlet{
         ArrayList<Enrollment> enrollments = new ArrayList<>();
 
         Report report;
-        try {
+        PreparedStatement ps = null;
+        ResultSet rs = null;
 
-            PreparedStatement ps = con.prepareStatement("SELECT idVerbale,verbale.dataOra AS dataVerbale, appello.dataOra AS dataAppello,nome,appello.idAppello AS idAppello ,corso.idCorso AS idCorso FROM corso JOIN appello ON corso.idCorso = appello.idCorso JOIN verbale ON verbale.idAppello = appello.idAppello WHERE idVerbale=? AND appello.idAppello=? AND corso.codiceDocente=?");
+        try {
+            ps = con.prepareStatement("SELECT idVerbale,verbale.dataOra AS dataVerbale, appello.dataOra AS dataAppello,nome,appello.idAppello AS idAppello ,corso.idCorso AS idCorso FROM corso JOIN appello ON corso.idCorso = appello.idCorso JOIN verbale ON verbale.idAppello = appello.idAppello WHERE idVerbale=? AND appello.idAppello=? AND corso.codiceDocente=?");
             ps.setInt(1, reportId);
             ps.setInt(2, sessionID);
             ps.setInt(3, teacherID);
 
-            ResultSet rs = ps.executeQuery();
+            rs = ps.executeQuery();
             if (rs.next()) {
                 String courseName =  rs.getString("nome");
                 courseID = rs.getInt("idCorso");
                 report = new Report(reportId, rs.getDate("dataVerbale"), courseName, rs.getDate("dataAppello"),Integer.parseInt(rs.getString("idAppello")));
 
+                ps.close();
                 ps = con.prepareStatement("SELECT matricola, cognome, nome, email, corsoLaurea, voto, statoValutazione, idVerbale, idAppello,idCorso FROM esame NATURAL JOIN iscrizioneCorso NATURAL JOIN studente WHERE idVerbale=? AND idCorso=? ORDER BY matricola");
                 ps.setInt(1, reportId);
                 ps.setInt(2, courseID);
@@ -70,28 +75,29 @@ public class ReportServlet extends HttpServlet{
                     //System.out.println(enrollment);
                     enrollments.add(enrollment);
                 }
+
+                //CONFIGURAZIONE PARAMETRI SPECIFICI PER LA PAGINA
+                request.setAttribute("report", report);
+                request.setAttribute("enrollments", enrollments);
+
+                //CONFIGURAZIONE LAYOUT
+                request.setAttribute("type", session.getAttribute("type"));
+                request.setAttribute("pageTitle", "Verbale");
+                request.setAttribute("fragname", "report");
+                request.setAttribute("fragkind", "teacherFragments");
+                request.setAttribute("backLink", "report-list");
+                ThymeleafUtils.process(ThymeleafUtils.getRightPath(request), request, response, getServletContext());
             }
             else{
                 response.sendRedirect("report-list");
-                return;
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            ThymeleafUtils.redirectToDBErrorPage(response);
         }
-
-
-        //CONFIGURAZIONE PARAMETRI SPECIFICI PER LA PAGINA
-        request.setAttribute("report", report);
-        request.setAttribute("enrollments", enrollments);
-
-        //CONFIGURAZIONE LAYOUT
-        request.setAttribute("type", session.getAttribute("type"));
-        request.setAttribute("pageTitle", "Verbale");
-        request.setAttribute("fragname", "report");
-        request.setAttribute("fragkind", "teacherFragments");
-        request.setAttribute("backLink", "report-list");
-        ThymeleafUtils.process(ThymeleafUtils.getRightPath(request), request, response, getServletContext());
-
-
+        finally {
+            DbUtils.closeQuietly(rs);
+            DbUtils.closeQuietly(ps);
+            DbUtils.closeQuietly(con);
+        }
     }
 }

@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.apache.commons.dbutils.DbUtils;
 
 import java.io.IOException;
 import java.sql.*;
@@ -26,6 +27,7 @@ public class CoursesServlet extends HttpServlet {
         if (!ThymeleafUtils.mandatoryParametersCheck(mandatoryParams, PageType.Common, session, request, response))
             return;
 
+        session.removeAttribute("examSession");
         session.removeAttribute("course");
 
         Connection con = Database.getConnection();
@@ -35,9 +37,9 @@ public class CoursesServlet extends HttpServlet {
         }
 
         ArrayList<Course> courses = new ArrayList<>();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
         try {
-            PreparedStatement ps;
-            ResultSet rs;
             switch (session.getAttribute("type")) {
                 case LoginType.Student:
                     ps = con.prepareStatement("SELECT corso.idCorso,nome FROM iscrizioneCorso JOIN corso ON iscrizioneCorso.idCorso = corso.idCorso WHERE iscrizioneCorso.matricola = ? ORDER BY nome DESC");
@@ -49,6 +51,7 @@ public class CoursesServlet extends HttpServlet {
                         courses.add(new Course(id, name));
                     }
                     break;
+
                 case LoginType.Teacher:
                     ps = con.prepareStatement("SELECT * FROM corso WHERE codiceDocente = ? ORDER BY nome DESC");
                     ps.setInt(1, (Integer) session.getAttribute("teacher"));
@@ -61,31 +64,35 @@ public class CoursesServlet extends HttpServlet {
                     break;
 
                 default:
-                    throw new IllegalStateException("Unexpected value: " + session.getAttribute("type"));
+                    throw new IllegalArgumentException("Unexpected value: " + session.getAttribute("type"));
             }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-            response.sendRedirect("student-login");
+
+            //CONFIGURAZIONE PARAMETRI SPECIFICI PER LA PAGINA
+
+            request.setAttribute("courses", courses);
+
+            //CONFIGURAZIONE LAYOUT
+            String pageTitle;
+            if (session.getAttribute("type") == LoginType.Student) {
+                pageTitle = "Corsi studente";
+            } else {
+                pageTitle = "Corsi docente";
+            }
+
+            request.setAttribute("type", session.getAttribute("type"));
+            request.setAttribute("pageTitle", pageTitle);
+            request.setAttribute("fragname", "courses");
+            request.setAttribute("fragkind", "generalFragments");
+            request.setAttribute("backLink", "#");
+
+            ThymeleafUtils.process(ThymeleafUtils.getRightPath(request), request, response, getServletContext());
+        } catch (SQLException | IllegalArgumentException e) {
+            ThymeleafUtils.redirectToDBErrorPage(response);
         }
-
-        //CONFIGURAZIONE PARAMETRI SPECIFICI PER LA PAGINA
-
-        request.setAttribute("courses", courses);
-
-        //CONFIGURAZIONE LAYOUT
-        String pageTitle;
-        if (session.getAttribute("type") == LoginType.Student) {
-            pageTitle = "Corsi studente";
-        } else {
-            pageTitle = "Corsi docente";
+        finally {
+            DbUtils.closeQuietly(rs);
+            DbUtils.closeQuietly(ps);
+            DbUtils.closeQuietly(con);
         }
-
-        request.setAttribute("type", session.getAttribute("type"));
-        request.setAttribute("pageTitle", pageTitle);
-        request.setAttribute("fragname", "courses");
-        request.setAttribute("fragkind", "generalFragments");
-        request.setAttribute("backLink", "#");
-
-        ThymeleafUtils.process(ThymeleafUtils.getRightPath(request), request, response, getServletContext());
     }
 }

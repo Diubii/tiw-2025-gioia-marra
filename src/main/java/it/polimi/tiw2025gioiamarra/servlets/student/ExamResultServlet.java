@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.apache.commons.dbutils.DbUtils;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -35,10 +36,9 @@ public class ExamResultServlet extends HttpServlet{
 
         ArrayList<Integer> appelliIscritto = new ArrayList<>();
 
+        PreparedStatement ps = null;
+        ResultSet rs = null;
         try {
-            PreparedStatement ps;
-            ResultSet rs;
-
             //preparare tab exam di questo studente e metto enrolled solo se anche li
             int matricola = (Integer)session.getAttribute("student");
             ps = con.prepareStatement("SELECT idAppello FROM esame WHERE matricola = ?");
@@ -97,14 +97,12 @@ public class ExamResultServlet extends HttpServlet{
                 response.sendRedirect("exam-sessions?course=" + courseID);
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            ThymeleafUtils.redirectToDBErrorPage(response);
         }
-
+        finally {
+            DbUtils.closeQuietly(rs);
+            DbUtils.closeQuietly(ps);
+            DbUtils.closeQuietly(con);
+        }
     }
-
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        HttpSession session = request.getSession();
-
-    }
-
 }
