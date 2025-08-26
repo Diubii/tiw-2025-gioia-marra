@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.apache.commons.dbutils.DbUtils;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -35,15 +36,14 @@ public class ExamSessionsServlet extends HttpServlet {
             return;
         }
 
-        PreparedStatement ps;
-        ResultSet rs;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
         ArrayList<ExamSession> examSessions = new ArrayList<>();
-        ArrayList<Integer> appelliIscritto = new ArrayList<Integer>();
+        ArrayList<Integer> appelliIscritto = new ArrayList<>();
         Course course;
-        try {
-            ps = con.prepareStatement("SELECT * FROM corso WHERE idCorso = ? AND codiceDocente = ?");
+        try { //TODO: Mettere in sicurezza
+            ps = con.prepareStatement("SELECT * FROM corso WHERE idCorso = ?");
             ps.setInt(1, Integer.parseInt(request.getParameter("course")));
-            ps.setInt(2, (Integer) session.getAttribute("teacher"));
             rs = ps.executeQuery();
             if (rs.next()) {
                 course = new Course(rs.getInt("idCorso"), rs.getString("nome"));
@@ -77,26 +77,29 @@ public class ExamSessionsServlet extends HttpServlet {
                 else{
                     enrolled= true;
                 }
-                ExamSession examSession = new ExamSession(rs.getInt("idAppello"), course, rs.getDate("dataOra"),enrolled );
+                ExamSession examSession = new ExamSession(rs.getInt("idAppello"), course, rs.getDate("dataOra"), enrolled);
                 examSessions.add(examSession);
             }
+
+            //CONFIGURAZIONE PARAMETRI SPECIFICI PER LA PAGINA
+            request.setAttribute("course", course);
+            request.setAttribute("examSessions", examSessions);
+
+            //CONFIGURAZIONE LAYOUT
+            request.setAttribute("type", session.getAttribute("type"));
+            request.setAttribute("pageTitle", "Date appelli d'esame");
+            request.setAttribute("fragname", "examsessions");
+            request.setAttribute("fragkind", "generalFragments");
+            request.setAttribute("backLink", "/courses");
+
+            ThymeleafUtils.process(ThymeleafUtils.getRightPath(request), request, response, getServletContext());
         } catch (SQLException e) {
-            System.err.println(e.getMessage());
-            response.sendRedirect("courses");
-            return;
+            ThymeleafUtils.redirectToDBErrorPage(response);
         }
-
-        //CONFIGURAZIONE PARAMETRI SPECIFICI PER LA PAGINA
-        request.setAttribute("course", course);
-        request.setAttribute("examSessions", examSessions);
-
-        //CONFIGURAZIONE LAYOUT
-        request.setAttribute("type", session.getAttribute("type"));
-        request.setAttribute("pageTitle", "Date appelli d'esame");
-        request.setAttribute("fragname", "examsessions");
-        request.setAttribute("fragkind", "generalFragments");
-        request.setAttribute("backLink", "/courses");
-
-        ThymeleafUtils.process(ThymeleafUtils.getRightPath(request), request, response, getServletContext());
+        finally {
+            DbUtils.closeQuietly(rs);
+            DbUtils.closeQuietly(ps);
+            DbUtils.closeQuietly(con);
+        }
     }
 }

@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.apache.commons.dbutils.DbUtils;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -82,15 +83,14 @@ public class GenerateReportServlet extends HttpServlet{
                 response.sendRedirect("enrolled-students?course=" + courseID + "&session=" + sessionID +"&sort=matricola&order=asc&emptyReport=1");
             }
 
-        } catch (Exception e) {
-            if (con != null) try { con.rollback(); } catch (SQLException ex) { ex.printStackTrace(); }
-            e.printStackTrace();
+        } catch (SQLException e) {
+            try { con.rollback(); } catch (SQLException _) {}
+            ThymeleafUtils.redirectToDBErrorPage(response);
         } finally {
-            try { if (rs != null) rs.close(); } catch (SQLException e) { e.printStackTrace(); }
-            try { if (psInsert != null) psInsert.close(); } catch (SQLException e) { e.printStackTrace(); }
-            try { if (psUpdate != null) psUpdate.close(); } catch (SQLException e) { e.printStackTrace(); }
-            try { if (con != null) con.setAutoCommit(true); } catch (SQLException e) { e.printStackTrace(); }
+            DbUtils.closeQuietly(rs);
+            DbUtils.closeQuietly(psInsert);
+            DbUtils.closeQuietly(psUpdate);
+            DbUtils.closeQuietly(con);
         }
     }
-
 }

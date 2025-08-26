@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.apache.commons.dbutils.DbUtils;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -40,15 +41,18 @@ public class PublishGradesServlet extends HttpServlet {
         String order = request.getParameter("order");
         if(order == null || order.isEmpty()) order = "asc";
 
-        PreparedStatement ps;
-        try {
+        PreparedStatement ps = null;
+        try { //TODO: Mettere in sicurezza questa query (il prof che sta pubblicando è responsabile dell'appello?)
             ps = con.prepareStatement("UPDATE esame SET statoValutazione='Published' WHERE statoValutazione='Inserted' AND idAppello=?");
             ps.setInt(1, examSessionID);
             ps.execute();
             response.sendRedirect("enrolled-students?course=" + courseID + "&session=" + examSessionID + "&sort=" + sort + "&order=" + order);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            ThymeleafUtils.redirectToDBErrorPage(response);
         }
-
+        finally {
+            DbUtils.closeQuietly(ps);
+            DbUtils.closeQuietly(con);
+        }
     }
 }

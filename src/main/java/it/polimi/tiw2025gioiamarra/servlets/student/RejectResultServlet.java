@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.apache.commons.dbutils.DbUtils;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -32,15 +33,19 @@ public class RejectResultServlet extends HttpServlet {
         int courseID = Integer.parseInt(request.getParameter("course"));
         int examSessionID = Integer.parseInt(request.getParameter("session"));
 
+        PreparedStatement ps = null;
         try {
-            PreparedStatement ps = con.prepareStatement("UPDATE esame SET statoValutazione = 'Rejected' WHERE esame.matricola = ? AND esame.idAppello = ?");
+            ps = con.prepareStatement("UPDATE esame SET statoValutazione = 'Rejected' WHERE esame.matricola = ? AND esame.idAppello = ?");
             ps.setInt(1, (Integer) session.getAttribute("student"));
             ps.setInt(2, examSessionID);
             ps.execute();
             response.sendRedirect("ExamResult?course=" + courseID + "&session=" + examSessionID + "&sort=matricola&order=asc");
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            ThymeleafUtils.redirectToDBErrorPage(response);
         }
-
+        finally {
+            DbUtils.closeQuietly(ps);
+            DbUtils.closeQuietly(con);
+        }
     }
 }

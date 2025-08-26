@@ -2,6 +2,7 @@ package it.polimi.tiw2025gioiamarra.servlets;
 
 import it.polimi.tiw2025gioiamarra.items.LoginType;
 import it.polimi.tiw2025gioiamarra.utils.Database;
+import it.polimi.tiw2025gioiamarra.utils.ThymeleafUtils;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -9,6 +10,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.apache.commons.dbutils.DbUtils;
 
 import java.io.IOException;
 import java.sql.*;
@@ -19,13 +21,13 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Connection con = Database.getConnection();
         if (con == null) {
-            System.err.println("Couldn't establish a connection to the database.");
-            response.sendRedirect("student-login");
+            ThymeleafUtils.redirectToDBErrorPage(response);
             return;
         }
 
+        PreparedStatement ps=null;
+        ResultSet rs=null;
         try {
-            PreparedStatement ps;
             switch (request.getAttribute("type")) {
                 case LoginType.Student:
                     ps = con.prepareStatement("SELECT * FROM studente where matricola=? and pass=?");
@@ -48,7 +50,8 @@ public class LoginServlet extends HttpServlet {
             }
 
             ps.setString(2, request.getParameter("password"));
-            ResultSet rs = ps.executeQuery();
+
+            rs = ps.executeQuery();
             if (rs.next()) {
                 HttpSession session = request.getSession();
                 switch (request.getAttribute("type")) {
@@ -80,7 +83,12 @@ public class LoginServlet extends HttpServlet {
 
             }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            ThymeleafUtils.redirectToDBErrorPage(response);
+        }
+        finally {
+            DbUtils.closeQuietly(rs);
+            DbUtils.closeQuietly(ps);
+            DbUtils.closeQuietly(con);
         }
     }
 }
