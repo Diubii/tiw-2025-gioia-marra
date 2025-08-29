@@ -6,9 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.Context;
 import org.thymeleaf.context.WebContext;
-import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.WebApplicationTemplateResolver;
 import org.thymeleaf.web.servlet.JakartaServletWebApplication;
 
@@ -19,7 +17,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class ThymeleafUtils {
     public static TemplateEngine getTemplateEngine(WebApplicationTemplateResolver templateResolver) {
@@ -54,70 +51,44 @@ public class ThymeleafUtils {
         return async != null && async.equals("true") ? "fragmentWrapper" : "generalLayout";
     }
 
-    public static ArrayList<String> getGrades(Connection con) {
-        PreparedStatement ps;
-        ResultSet rs;
-
-        try {
-            //Get enum values to show in the select tag
-            ps = con.prepareStatement("SELECT SUBSTRING(COLUMN_TYPE,5) " +
-                    "FROM information_schema.COLUMNS " +
-                    "WHERE TABLE_SCHEMA='tiw'" +
-                    "  AND TABLE_NAME='esame'" +
-                    "  AND COLUMN_NAME='voto'");
-            rs = ps.executeQuery();
-            if (rs.next()) {
-                String values = rs.getString("SUBSTRING(COLUMN_TYPE,5)");
-                values = values.replace("(", "");
-                values = values.replace(")", "");
-                values = values.replace("'", "");
-                return new ArrayList<>(Arrays.asList(values.split(",")));
-            }
-            else{
-                return new ArrayList<>();
-            }
-        } catch (SQLException e) {
-            return new ArrayList<>();
-        }
-    }
-
     public static boolean mandatoryParametersCheck(String[] mandatoryParameters, PageType pageType, HttpSession session, HttpServletRequest request, HttpServletResponse response) throws IOException {
         switch (pageType) {
             case Common -> {
-                if((session.getAttribute("teacher") == null && session.getAttribute("student") == null) || session.getAttribute("type") == null) {
+                if ((session.getAttribute("teacher") == null && session.getAttribute("student") == null) || session.getAttribute("type") == null) {
                     response.sendRedirect("student-login");
                     return false;
                 }
             }
             case Student -> {
-                if(session.getAttribute("student") == null || session.getAttribute("type") == null) {
+                if (session.getAttribute("student") == null || session.getAttribute("type") == null) {
                     response.sendRedirect("student-login");
                     return false;
                 }
             }
             case Teacher -> {
-                if(session.getAttribute("teacher") == null || session.getAttribute("type") == null) {
+                if (session.getAttribute("teacher") == null || session.getAttribute("type") == null) {
                     response.sendRedirect("teacher-login");
                     return false;
                 }
             }
         }
 
-        for(String param : mandatoryParameters) {
-            switch (param.toLowerCase()){
+        for (String param : mandatoryParameters) {
+            switch (param.toLowerCase()) {
                 case "course" -> {
-                    if(!coursesParameterCheck(request, response)) return false;
+                    if (!coursesParameterCheck(request, response)) return false;
                 }
                 case "session" -> {
-                    if(!sessionParameterCheck(request, response)) return false;
+                    if (!sessionParameterCheck(request, response)) return false;
                 }
                 case "student" -> {
-                    if(!studentParameterCheck(request, response)) return false;
+                    if (!studentParameterCheck(request, response)) return false;
                 }
                 case "report" -> {
-                    if(!reportParameterCheck(request, response)) return false;
+                    if (!reportParameterCheck(request, response)) return false;
                 }
-                default -> {}
+                default -> {
+                }
             }
         }
 
@@ -127,7 +98,7 @@ public class ThymeleafUtils {
     private static boolean coursesParameterCheck(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String courseParam = request.getParameter("course");
 
-        if(courseParam == null || courseParam.isEmpty()) {
+        if (courseParam == null || courseParam.isEmpty()) {
             response.sendRedirect("courses");
             return false;
         }
@@ -138,7 +109,7 @@ public class ThymeleafUtils {
         String courseParam = request.getParameter("course");
         String sessionParam = request.getParameter("session");
 
-        if((sessionParam == null || sessionParam.isEmpty()) && (courseParam != null && !courseParam.isEmpty())) {
+        if ((sessionParam == null || sessionParam.isEmpty()) && (courseParam != null && !courseParam.isEmpty())) {
             response.sendRedirect("exam-sessions?course=" + courseParam);
             return false;
         }
@@ -150,7 +121,7 @@ public class ThymeleafUtils {
         String sessionParam = request.getParameter("session");
         String studentParam = request.getParameter("student");
 
-        if((studentParam == null || studentParam.isEmpty()) && (sessionParam != null && !sessionParam.isEmpty()) && (courseParam != null && !courseParam.isEmpty())) {
+        if ((studentParam == null || studentParam.isEmpty()) && (sessionParam != null && !sessionParam.isEmpty()) && (courseParam != null && !courseParam.isEmpty())) {
             response.sendRedirect("enrolled-students?course=" + courseParam + "&session=" + sessionParam);
             return false;
         }
@@ -161,7 +132,7 @@ public class ThymeleafUtils {
         String reportParam = request.getParameter("report");
         String sessionParam = request.getParameter("session");
 
-        if((reportParam == null || reportParam.isEmpty()) || (sessionParam == null || sessionParam.isEmpty())) {
+        if ((reportParam == null || reportParam.isEmpty()) || (sessionParam == null || sessionParam.isEmpty())) {
             response.sendRedirect("report-list");
             return false;
         }

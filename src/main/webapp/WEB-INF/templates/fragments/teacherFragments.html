@@ -138,10 +138,10 @@
         <tr th:each="report : ${reports}">
             <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900" th:text="${report.id()}"></td>
             <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900" th:text="${report.reportDate()} "></td>
-            <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900" th:text="${report.courseName()}"></td>
+            <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900" th:text="${report.courseID()}"></td>
             <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900" th:text="${report.examDate()}"></td>
             <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900" >
-                <a th:href="@{report(report=${report.id()},session=${report.sessionId()})}" class="inline-block bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 text-white font-medium rounded-md text-sm px-4 py-2 transition">Apri</a>
+                <a th:href="@{report(report=${report.id()},session=${report.sessionID()})}" class="inline-block bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 text-white font-medium rounded-md text-sm px-4 py-2 transition">Apri</a>
             </td>
         </tr>
         </tbody>
@@ -156,7 +156,7 @@
             <tr>
                 <th class="px-6 py-3 text-center text-base font-semibold text-gray-700 uppercase tracking-wider">Id verbale</th>
                 <th class="px-6 py-3 text-center text-base font-semibold text-gray-700 uppercase tracking-wider">Data verbale</th>
-                <th class="px-6 py-3 text-center text-base font-semibold text-gray-700 uppercase tracking-wider" >Corso</th>
+                <th class="px-6 py-3 text-center text-base font-semibold text-gray-700 uppercase tracking-wider">Corso</th>
                 <th class="px-6 py-3 text-center text-base font-semibold text-gray-700 uppercase tracking-wider">Data appello</th>
             </tr>
             </thead>
@@ -164,7 +164,7 @@
             <tr>
                 <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900" th:text="${report.id()}"></td>
                 <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900" th:text="${report.reportDate()} "></td>
-                <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900" th:text="${report.courseName()}"></td>
+                <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900" th:text="${report.courseID()}"></td>
                 <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900" th:text="${report.examDate()}"></td>
             </tr>
             </tbody>

@@ -1,14 +1,16 @@
 package it.polimi.tiw2025gioiamarra.servlets.teacher;
 
 
+import it.polimi.tiw2025gioiamarra.daos.interfaces.ReportsDAO;
 import it.polimi.tiw2025gioiamarra.items.*;
-import it.polimi.tiw2025gioiamarra.utils.Database;
+import it.polimi.tiw2025gioiamarra.utils.DatabaseConnection;
 import it.polimi.tiw2025gioiamarra.utils.ThymeleafUtils;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.apache.commons.dbutils.DbUtils;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -16,8 +18,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-
-import org.apache.commons.dbutils.DbUtils;
 
 @WebServlet(name="ReportServlet", value="/report")
 public class ReportServlet extends HttpServlet{
@@ -28,76 +28,38 @@ public class ReportServlet extends HttpServlet{
         String[] mandatoryParams = {"session", "report"};
         if(!ThymeleafUtils.mandatoryParametersCheck(mandatoryParams, PageType.Teacher, session, request, response)) return;
 
-        Connection con = Database.getConnection();
-        if (con == null) {
+        int reportID = Integer.parseInt(request.getParameter("report"));
+        int sessionID = Integer.parseInt(request.getParameter("session"));
+        int teacherID = (Integer) session.getAttribute("teacher");
+        //int courseID;
+
+        Report report;
+        ArrayList<Enrollment> enrollments;
+
+        try (DatabaseConnection con = new DatabaseConnection()) {
+            ReportsDAO reportsDAO = con.getMySQLReportsDAO();
+            report = reportsDAO.getReport(reportID, sessionID, teacherID);
+            if(report == null) {
+                response.sendRedirect("report-list");
+                return;
+            }
+
+            enrollments = reportsDAO.getEnrollmentsInReport(reportID);
+        } catch (SQLException e) {
             ThymeleafUtils.redirectToDBErrorPage(response);
             return;
         }
 
-        int reportId = Integer.parseInt(request.getParameter("report"));
-        int sessionID = Integer.parseInt(request.getParameter("session"));
-        int teacherID = (Integer) session.getAttribute("teacher");
-        int courseID;
-        ArrayList<Enrollment> enrollments = new ArrayList<>();
+        //CONFIGURAZIONE PARAMETRI SPECIFICI PER LA PAGINA
+        request.setAttribute("report", report);
+        request.setAttribute("enrollments", enrollments);
 
-        Report report;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-
-        try {
-            ps = con.prepareStatement("SELECT idVerbale,verbale.dataOra AS dataVerbale, appello.dataOra AS dataAppello,nome,appello.idAppello AS idAppello ,corso.idCorso AS idCorso FROM corso JOIN appello ON corso.idCorso = appello.idCorso JOIN verbale ON verbale.idAppello = appello.idAppello WHERE idVerbale=? AND appello.idAppello=? AND corso.codiceDocente=?");
-            ps.setInt(1, reportId);
-            ps.setInt(2, sessionID);
-            ps.setInt(3, teacherID);
-
-            rs = ps.executeQuery();
-            if (rs.next()) {
-                String courseName =  rs.getString("nome");
-                courseID = rs.getInt("idCorso");
-                report = new Report(reportId, rs.getDate("dataVerbale"), courseName, rs.getDate("dataAppello"),Integer.parseInt(rs.getString("idAppello")));
-
-                ps.close();
-                ps = con.prepareStatement("SELECT matricola, cognome, nome, email, corsoLaurea, voto, statoValutazione, idVerbale, idAppello,idCorso FROM esame NATURAL JOIN iscrizioneCorso NATURAL JOIN studente WHERE idVerbale=? AND idCorso=? ORDER BY matricola");
-                ps.setInt(1, reportId);
-                ps.setInt(2, courseID);
-                rs = ps.executeQuery();
-                while (rs.next()) {
-                    int studentNumber = Integer.parseInt(rs.getString("matricola"));
-                    String studentName = rs.getString("nome");
-                    String studentSurname = rs.getString("cognome");
-                    String studentEmail = rs.getString("email");
-                    String degreeCourse = rs.getString("corsoLaurea");
-                    String grade = rs.getString("voto");
-                    GradingStatus gradingStatus = GradingStatus.valueOf(rs.getString("statoValutazione"));
-                    String verbalID = rs.getString("idVerbale");
-                    Student student = new Student(studentNumber, studentName, studentSurname, studentEmail, degreeCourse);
-                    Enrollment enrollment = new Enrollment(student, grade, gradingStatus, verbalID, courseID, sessionID);
-                    //System.out.println(enrollment);
-                    enrollments.add(enrollment);
-                }
-
-                //CONFIGURAZIONE PARAMETRI SPECIFICI PER LA PAGINA
-                request.setAttribute("report", report);
-                request.setAttribute("enrollments", enrollments);
-
-                //CONFIGURAZIONE LAYOUT
-                request.setAttribute("type", session.getAttribute("type"));
-                request.setAttribute("pageTitle", "Verbale");
-                request.setAttribute("fragname", "report");
-                request.setAttribute("fragkind", "teacherFragments");
-                request.setAttribute("backLink", "report-list");
-                ThymeleafUtils.process(ThymeleafUtils.getRightPath(request), request, response, getServletContext());
-            }
-            else{
-                response.sendRedirect("report-list");
-            }
-        } catch (SQLException e) {
-            ThymeleafUtils.redirectToDBErrorPage(response);
-        }
-        finally {
-            DbUtils.closeQuietly(rs);
-            DbUtils.closeQuietly(ps);
-            DbUtils.closeQuietly(con);
-        }
+        //CONFIGURAZIONE LAYOUT
+        request.setAttribute("type", session.getAttribute("type"));
+        request.setAttribute("pageTitle", "Verbale");
+        request.setAttribute("fragname", "report");
+        request.setAttribute("fragkind", "teacherFragments");
+        request.setAttribute("backLink", "report-list");
+        ThymeleafUtils.process(ThymeleafUtils.getRightPath(request), request, response, getServletContext());
     }
 }
