@@ -1,7 +1,8 @@
 package it.polimi.tiw2025gioiamarra.servlets.student;
 
+import it.polimi.tiw2025gioiamarra.daos.interfaces.ExamSessionsDAO;
 import it.polimi.tiw2025gioiamarra.items.*;
-import it.polimi.tiw2025gioiamarra.utils.Database;
+import it.polimi.tiw2025gioiamarra.utils.DatabaseConnection;
 import it.polimi.tiw2025gioiamarra.utils.ThymeleafUtils;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -16,93 +17,58 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 
-@WebServlet(name="ExamResultServlet", value = "/ExamResult")
-public class ExamResultServlet extends HttpServlet{
+@WebServlet(name = "ExamResultServlet", value = "/ExamResult")
+public class ExamResultServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession();
 
         String[] mandatoryParams = {"course", "session"};
-        if(!ThymeleafUtils.mandatoryParametersCheck(mandatoryParams, PageType.Student, session, request, response)) return;
+        if (!ThymeleafUtils.mandatoryParametersCheck(mandatoryParams, PageType.Student, session, request, response))
+            return;
 
-        String courseID = request.getParameter("course");
+        int courseID = Integer.parseInt(request.getParameter("course"));
 
-        Connection con = Database.getConnection();
-        if (con == null) {
+        ArrayList<Integer> appelliIscritto;
+
+        int studentID = (Integer) session.getAttribute("student");
+        int examSessionID = Integer.parseInt(request.getParameter("session"));
+        Enrollment enrollment;
+        String courseName;
+        Date dateTime;
+
+        try (DatabaseConnection con = new DatabaseConnection()) {
+            ExamSessionsDAO examSessionsDAO = con.getMySQLExamSessionsDAO();
+            enrollment = examSessionsDAO.getEnrollment(studentID, examSessionID);
+
+            if (enrollment == null) {
+                response.sendRedirect("exam-sessions?course=" + courseID);
+                return;
+            }
+
+            courseName = con.getMySQLCoursesDAO().getCourse(enrollment.courseID()).name();
+            dateTime = examSessionsDAO.getExamSession(examSessionID).dateTime();
+        } catch (SQLException e) {
             ThymeleafUtils.redirectToDBErrorPage(response);
             return;
         }
 
-        ArrayList<Integer> appelliIscritto = new ArrayList<>();
-
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        try {
-            //preparare tab exam di questo studente e metto enrolled solo se anche li
-            int matricola = (Integer)session.getAttribute("student");
-            ps = con.prepareStatement("SELECT idAppello FROM esame WHERE matricola = ?");
-            ps.setInt(1, matricola);
-            rs = ps.executeQuery();
-            while (rs.next()) {
-                appelliIscritto.add(rs.getInt("idAppello"));
-            }
+        //CONFIGURAZIONE PARAMETRI SPECIFICI PER LA PAGINA
+        request.setAttribute("enrollment", enrollment);
+        request.setAttribute("courseName", courseName);
+        request.setAttribute("dateTime", dateTime);
+        session.setAttribute("examSession", examSessionID);
+        //session.setAttribute("student", studentNumber);
 
 
-            ps = con.prepareStatement("SELECT matricola, cognome, studente.nome, email, corsoLaurea, voto, statoValutazione, esame.idAppello , corso.idCorso, corso.nome AS nomeCorso , dataOra  FROM esame NATURAL JOIN iscrizioneCorso NATURAL JOIN studente JOIN corso on iscrizioneCorso.idCorso = corso.idCorso JOIN appello ON appello.idAppello = esame.idAppello WHERE studente.matricola = ? AND corso.idCorso = ? AND esame.idAppello = ? ");
-            int studentNumber = (int) session.getAttribute("student");
-            int examSessionID = Integer.parseInt(request.getParameter("session"));
-            ps.setInt(1, studentNumber);
-            ps.setInt(2, Integer.parseInt(courseID));
-            ps.setInt(3, examSessionID);
-            rs = ps.executeQuery();
-            Enrollment enrollment;
-            if(rs.next()) {
-                String studentName = rs.getString("nome");
-                String studentSurname = rs.getString("cognome");
-                String studentEmail = rs.getString("email");
-                String degreeCourse = rs.getString("corsoLaurea");
-                String grade = rs.getString("voto");
-                GradingStatus gradingStatus = GradingStatus.valueOf(rs.getString("statoValutazione"));
-                Student student = new Student(studentNumber, studentName, studentSurname, studentEmail, degreeCourse);
-                enrollment = new Enrollment(student, grade, gradingStatus, null, Integer.parseInt(courseID), examSessionID);
-                request.setAttribute("enrollment", enrollment);
-                //Course
-                Course course;
-                course = new Course(rs.getInt("idCorso"), rs.getString("nomeCorso"));
-                request.setAttribute("course", course);
-                //ExamSession
-                ExamSession examSession;
-                examSession = new ExamSession(rs.getInt("idAppello"), course, rs.getDate("dataOra"),appelliIscritto.contains(rs.getInt("idAppello")) );
-                request.setAttribute("examsession", examSession);
-
-
-
-                //CONFIGURAZIONE PARAMETRI SPECIFICI PER LA PAGINA
-                session.setAttribute("examSession", examSessionID);
-                session.setAttribute("student", studentNumber);
-
-
-                //CONFIGURAZIONE LAYOUT
-                request.setAttribute("type", session.getAttribute("type"));
-                request.setAttribute("pageTitle", "Risultato esame");
-                request.setAttribute("fragname", "examresult");
-                request.setAttribute("fragkind", "studentFragments");
-                request.setAttribute("backLink", "exam-sessions?course=" + courseID);
-                ThymeleafUtils.process(ThymeleafUtils.getRightPath(request), request, response, getServletContext());
-
-            }
-            else{
-                //caso non enrolled sarebbe questo
-                response.sendRedirect("exam-sessions?course=" + courseID);
-            }
-        } catch (SQLException e) {
-            ThymeleafUtils.redirectToDBErrorPage(response);
-        }
-        finally {
-            DbUtils.closeQuietly(rs);
-            DbUtils.closeQuietly(ps);
-            DbUtils.closeQuietly(con);
-        }
+        //CONFIGURAZIONE LAYOUT
+        request.setAttribute("type", session.getAttribute("type"));
+        request.setAttribute("pageTitle", "Risultato esame");
+        request.setAttribute("fragname", "examresult");
+        request.setAttribute("fragkind", "studentFragments");
+        request.setAttribute("backLink", "exam-sessions?course=" + courseID);
+        ThymeleafUtils.process(ThymeleafUtils.getRightPath(request), request, response, getServletContext());
     }
 }

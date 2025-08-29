@@ -1,7 +1,7 @@
 package it.polimi.tiw2025gioiamarra.servlets.student;
 
 import it.polimi.tiw2025gioiamarra.items.PageType;
-import it.polimi.tiw2025gioiamarra.utils.Database;
+import it.polimi.tiw2025gioiamarra.utils.DatabaseConnection;
 import it.polimi.tiw2025gioiamarra.utils.ThymeleafUtils;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -24,28 +24,17 @@ public class RejectResultServlet extends HttpServlet {
         String[] mandatoryParams = {"course", "session"};
         if(!ThymeleafUtils.mandatoryParametersCheck(mandatoryParams, PageType.Student, session, request, response)) return;
 
-        Connection con = Database.getConnection();
-        if (con == null) {
+        int studentID = (int) session.getAttribute("student");
+        int courseID = Integer.parseInt(request.getParameter("course"));
+        int examSessionID = Integer.parseInt(request.getParameter("session"));
+
+        try (DatabaseConnection con = new DatabaseConnection()) {
+            con.getMySQLExamSessionsDAO().rejectGrade(studentID, examSessionID);
+        } catch (SQLException e) {
             ThymeleafUtils.redirectToDBErrorPage(response);
             return;
         }
 
-        int courseID = Integer.parseInt(request.getParameter("course"));
-        int examSessionID = Integer.parseInt(request.getParameter("session"));
-
-        PreparedStatement ps = null;
-        try {
-            ps = con.prepareStatement("UPDATE esame SET statoValutazione = 'Rejected' WHERE esame.matricola = ? AND esame.idAppello = ?");
-            ps.setInt(1, (Integer) session.getAttribute("student"));
-            ps.setInt(2, examSessionID);
-            ps.execute();
-            response.sendRedirect("ExamResult?course=" + courseID + "&session=" + examSessionID + "&sort=matricola&order=asc");
-        } catch (SQLException e) {
-            ThymeleafUtils.redirectToDBErrorPage(response);
-        }
-        finally {
-            DbUtils.closeQuietly(ps);
-            DbUtils.closeQuietly(con);
-        }
+        response.sendRedirect("ExamResult?course=" + courseID + "&session=" + examSessionID + "&sort=matricola&order=asc");
     }
 }

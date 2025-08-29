@@ -1,7 +1,8 @@
 package it.polimi.tiw2025gioiamarra.servlets.teacher;
 
-import it.polimi.tiw2025gioiamarra.items.*;
-import it.polimi.tiw2025gioiamarra.utils.Database;
+import it.polimi.tiw2025gioiamarra.items.PageType;
+import it.polimi.tiw2025gioiamarra.items.Report;
+import it.polimi.tiw2025gioiamarra.utils.DatabaseConnection;
 import it.polimi.tiw2025gioiamarra.utils.ThymeleafUtils;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -26,47 +27,23 @@ public class ReportListServlet extends HttpServlet {
         String[] mandatoryParams = {};
         if(!ThymeleafUtils.mandatoryParametersCheck(mandatoryParams, PageType.Teacher, session, request, response)) return;
 
-        Connection con = Database.getConnection();
-        if (con == null) {
+        ArrayList<Report> reportList;
+        try (DatabaseConnection con = new DatabaseConnection()) {
+            reportList = con.getMySQLReportsDAO().getTeacherReports((Integer) session.getAttribute("teacher"));
+        } catch (SQLException e) {
             ThymeleafUtils.redirectToDBErrorPage(response);
             return;
         }
 
-        ArrayList<Report> reportList = new ArrayList<>();
-        boolean error = false;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        try {
-            ps = con.prepareStatement("SELECT idVerbale,verbale.dataOra AS dataVerbale, appello.dataOra AS dataAppello,nome,appello.idAppello AS idAppello FROM corso JOIN appello ON corso.idCorso = appello.idCorso JOIN verbale ON verbale.idAppello = appello.idAppello WHERE corso.codiceDocente = ? ORDER BY corso.nome,appello.dataOra;");
-            ps.setInt(1, (Integer) session.getAttribute("teacher"));
+        //CONFIGURAZIONE PARAMETRI SPECIFICI PER LA PAGINA
+        request.setAttribute("reports", reportList);
 
-            rs = ps.executeQuery();
-            while (rs.next()) {
-                int reportId = Integer.parseInt(rs.getString("idVerbale"));
-                String courseName =  rs.getString("nome");
-                Report report = new Report(reportId, rs.getDate("dataVerbale"), courseName, rs.getDate("dataAppello"),Integer.parseInt(rs.getString("idAppello")));
-                reportList.add(report);
-            }
-
-            //CONFIGURAZIONE PARAMETRI SPECIFICI PER LA PAGINA
-            request.setAttribute("reports", reportList);
-
-            //CONFIGURAZIONE LAYOUT
-            request.setAttribute("type", session.getAttribute("type"));
-            request.setAttribute("pageTitle", "Verbali");
-            request.setAttribute("fragname", "reportList");
-            request.setAttribute("fragkind", "teacherFragments");
-            request.setAttribute("backLink", "#");
-            ThymeleafUtils.process(ThymeleafUtils.getRightPath(request), request, response, getServletContext());
-
-        } catch (SQLException e) {
-            ThymeleafUtils.redirectToDBErrorPage(response);
-        }
-        finally {
-            DbUtils.closeQuietly(rs);
-            DbUtils.closeQuietly(ps);
-            DbUtils.closeQuietly(con);
-        }
+        //CONFIGURAZIONE LAYOUT
+        request.setAttribute("type", session.getAttribute("type"));
+        request.setAttribute("pageTitle", "Verbali");
+        request.setAttribute("fragname", "reportList");
+        request.setAttribute("fragkind", "teacherFragments");
+        request.setAttribute("backLink", "#");
+        ThymeleafUtils.process(ThymeleafUtils.getRightPath(request), request, response, getServletContext());
     }
-
 }

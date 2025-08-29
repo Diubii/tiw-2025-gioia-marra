@@ -54,7 +54,7 @@
     <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-100">
         <tr>
-            <th class="px-6 py-3 text-center text-base font-semibold text-gray-700 uppercase tracking-wider" th:text="'Appelli di: ' + ${course.name()}"></th>
+            <th class="px-6 py-3 text-center text-base font-semibold text-gray-700 uppercase tracking-wider" th:text="'Appelli di: ' + ${courseName}"></th>
         </tr>
         </thead>
         <tbody class="divide-y divide-gray-200 bg-white">
@@ -63,12 +63,12 @@
                 <div class="flex justify-center items-center gap-2">
                     <a
                             th:if="${isStudent}"
-                            th:href="(${examSession.enrolled()} ? '/tiw/ExamResult' + '?course=' + ${course.id()} + '&session=' + ${examSession.id()}+ '&sort=matricola&order=asc' : '')"
+                            th:href="(${examSession.enrolled()} ? '/tiw/ExamResult' + '?course=' + ${examSession.courseID()} + '&session=' + ${examSession.id()}+ '&sort=matricola&order=asc' : '')"
                             th:text="${examSession.dateTime()}">
                     </a>
                     <a
                             th:unless="${isStudent}"
-                            th:href="'/tiw/enrolled-students' + '?course=' + ${course.id()} + '&session=' + ${examSession.id()}"
+                            th:href="'/tiw/enrolled-students' + '?course=' + ${examSession.courseID()} + '&session=' + ${examSession.id()}"
                             th:text="${examSession.dateTime()}">
                     </a>
                     <img

@@ -1,13 +1,17 @@
 package it.polimi.tiw2025gioiamarra.servlets.teacher;
 
-import it.polimi.tiw2025gioiamarra.items.*;
-import it.polimi.tiw2025gioiamarra.utils.Database;
+import it.polimi.tiw2025gioiamarra.items.Enrollment;
+import it.polimi.tiw2025gioiamarra.items.GradingStatus;
+import it.polimi.tiw2025gioiamarra.items.PageType;
+import it.polimi.tiw2025gioiamarra.items.Student;
+import it.polimi.tiw2025gioiamarra.utils.DatabaseConnection;
 import it.polimi.tiw2025gioiamarra.utils.ThymeleafUtils;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.apache.commons.dbutils.DbUtils;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -18,9 +22,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.dbutils.DbUtils;
-import org.thymeleaf.context.Context;
-
 @WebServlet(name="enrolledStudentsServlet", value="/enrolled-students")
 public class EnrolledStudentsServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -28,27 +29,20 @@ public class EnrolledStudentsServlet extends HttpServlet {
 
         String[] mandatoryParams = {"course", "session"};
         if(!ThymeleafUtils.mandatoryParametersCheck(mandatoryParams, PageType.Teacher, session, request, response)) return;
-
-        Connection con = Database.getConnection();
-        if (con == null) {
-            ThymeleafUtils.redirectToDBErrorPage(response);
-            return;
-        }
-
-        ArrayList<Enrollment> enrollments = new ArrayList<>();
+        ArrayList<Enrollment> enrollments;
 
         //Handling order by selected column
         String sort = request.getParameter("sort");
         sort = sort == null ? "matricola" : sort;
-        Map<String, String> validSortFields = new HashMap<>();
-        validSortFields.put("matricola", "matricola");
-        validSortFields.put("cognome", "cognome");
-        validSortFields.put("email", "email");
-        validSortFields.put("corsoLaurea", "corsoLaurea");
-        validSortFields.put("voto", "voto");
-        validSortFields.put("statoValutazione", "statoValutazione");
-        validSortFields.put("idVerbale", "idVerbale");
-        String orderBy = validSortFields.getOrDefault(sort, "matricola"); // default
+//        Map<String, String> validSortFields = new HashMap<>();
+//        validSortFields.put("matricola", "matricola");
+//        validSortFields.put("cognome", "cognome");
+//        validSortFields.put("email", "email");
+//        validSortFields.put("corsoLaurea", "corsoLaurea");
+//        validSortFields.put("voto", "voto");
+//        validSortFields.put("statoValutazione", "statoValutazione");
+//        validSortFields.put("idVerbale", "idVerbale");
+//        String orderBy = validSortFields.getOrDefault(sort, "matricola"); // default
 
         String order = request.getParameter("order");
         String sortDirection = "ASC";
@@ -60,61 +54,30 @@ public class EnrolledStudentsServlet extends HttpServlet {
         int sessionID = Integer.parseInt(request.getParameter("session"));
         int teacherID = (Integer) session.getAttribute( "teacher");
 
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        try {
-            ps = con.prepareStatement("SELECT matricola, cognome, studente.nome, email, corsoLaurea, voto, statoValutazione, idVerbale, idAppello FROM esame NATURAL JOIN iscrizioneCorso NATURAL JOIN studente JOIN corso ON iscrizioneCorso.idCorso = corso.idCorso WHERE corso.idCorso = ? AND idAppello = ? AND codiceDocente = ? ORDER BY ? ?");
-            ps.setInt(1, courseID);
-            ps.setInt(2, sessionID);
-            ps.setInt(3, teacherID);
-            ps.setString(4, sort);
-            ps.setString(5, sortDirection);
+        ArrayList<String> grades;
 
-            rs = ps.executeQuery();
-            if(!rs.next()) {
-                response.sendRedirect("exam-sessions?course=" + courseID);
-            }
-            else{
-                do {
-                    int studentNumber = Integer.parseInt(rs.getString("matricola"));
-                    String studentName = rs.getString("nome");
-                    String studentSurname = rs.getString("cognome");
-                    String studentEmail = rs.getString("email");
-                    String degreeCourse = rs.getString("corsoLaurea");
-                    String grade = rs.getString("voto");
-                    GradingStatus gradingStatus = GradingStatus.valueOf(rs.getString("statoValutazione"));
-                    String verbalID = rs.getString("idVerbale");
-                    Student student = new Student(studentNumber, studentName, studentSurname, studentEmail, degreeCourse);
-                    Enrollment enrollment = new Enrollment(student, grade, gradingStatus, verbalID, courseID, sessionID);
-                    //System.out.println(enrollment);
-                    enrollments.add(enrollment);
-                } while (rs.next());
-
-
-                //CONFIGURAZIONE PARAMETRI SPECIFICI PER LA PAGINA
-                request.setAttribute("enrollments", enrollments);
-                request.setAttribute("GradingStatus", GradingStatus.class);
-                request.setAttribute("emptyReport", request.getParameter("emptyReport"));
-                request.setAttribute("grades", ThymeleafUtils.getGrades(con));
-                session.setAttribute("examSession", sessionID);
-
-
-                //CONFIGURAZIONE LAYOUT
-                request.setAttribute("type", session.getAttribute("type"));
-                request.setAttribute("pageTitle", "Studenti iscritti");
-                request.setAttribute("fragname", "enrolledstudents");
-                request.setAttribute("fragkind", "teacherFragments");
-                request.setAttribute("backLink", "exam-sessions?course=" + courseID);
-                ThymeleafUtils.process(ThymeleafUtils.getRightPath(request), request, response, getServletContext());
-
-            }
+        try(DatabaseConnection con = new DatabaseConnection()) {
+            enrollments = con.getMySQLExamSessionsDAO().getEnrolledStudents(courseID, sessionID, teacherID, sortDirection, sort);
+            grades = con.getGrades();
         } catch (SQLException e) {
             ThymeleafUtils.redirectToDBErrorPage(response);
+            return;
         }
-        finally {
-            DbUtils.closeQuietly(rs);
-            DbUtils.closeQuietly(ps);
-            DbUtils.closeQuietly(con);
-        }
+
+        //CONFIGURAZIONE PARAMETRI SPECIFICI PER LA PAGINA
+        request.setAttribute("enrollments", enrollments);
+        request.setAttribute("GradingStatus", GradingStatus.class);
+        request.setAttribute("emptyReport", request.getParameter("emptyReport"));
+        request.setAttribute("grades", grades);
+        session.setAttribute("examSession", sessionID);
+
+
+        //CONFIGURAZIONE LAYOUT
+        request.setAttribute("type", session.getAttribute("type"));
+        request.setAttribute("pageTitle", "Studenti iscritti");
+        request.setAttribute("fragname", "enrolledstudents");
+        request.setAttribute("fragkind", "teacherFragments");
+        request.setAttribute("backLink", "exam-sessions?course=" + courseID);
+        ThymeleafUtils.process(ThymeleafUtils.getRightPath(request), request, response, getServletContext());
     }
 }
