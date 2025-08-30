@@ -1,8 +1,10 @@
 package it.polimi.tiw2025gioiamarra.daos.MySQLImplementations;
 
-import it.polimi.tiw2025gioiamarra.daos.interfaces.CoursesDAO;
 import it.polimi.tiw2025gioiamarra.daos.interfaces.ExamSessionsDAO;
-import it.polimi.tiw2025gioiamarra.items.*;
+import it.polimi.tiw2025gioiamarra.items.Enrollment;
+import it.polimi.tiw2025gioiamarra.items.ExamSession;
+import it.polimi.tiw2025gioiamarra.items.GradingStatus;
+import it.polimi.tiw2025gioiamarra.items.Student;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

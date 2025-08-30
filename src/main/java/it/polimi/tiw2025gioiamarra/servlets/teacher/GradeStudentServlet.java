@@ -7,16 +7,13 @@ import it.polimi.tiw2025gioiamarra.items.PageType;
 import it.polimi.tiw2025gioiamarra.items.Student;
 import it.polimi.tiw2025gioiamarra.utils.DatabaseConnection;
 import it.polimi.tiw2025gioiamarra.utils.ThymeleafUtils;
+import it.polimi.tiw2025gioiamarra.utils.Utils;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
-import org.apache.commons.dbutils.DbUtils;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -27,7 +24,7 @@ public class GradeStudentServlet extends HttpServlet {
         HttpSession session = request.getSession();
 
         String[] mandatoryParams = {"course", "session", "student"};
-        if(!ThymeleafUtils.mandatoryParametersCheck(mandatoryParams, PageType.Teacher, session, request, response)) return;
+        if(!Utils.mandatoryParametersCheck(mandatoryParams, PageType.Teacher, session, request, response)) return;
 
         int studentNumber = Integer.parseInt(request.getParameter("student"));
         int courseID = Integer.parseInt(request.getParameter("course"));
@@ -52,7 +49,7 @@ public class GradeStudentServlet extends HttpServlet {
                 return;
             }
         } catch (SQLException e) {
-            ThymeleafUtils.redirectToDBErrorPage(response);
+            Utils.redirectToDBErrorPage(response);
             return;
         }
 
@@ -76,7 +73,7 @@ public class GradeStudentServlet extends HttpServlet {
         HttpSession session = request.getSession();
 
         String[] mandatoryParams = {};
-        if(!ThymeleafUtils.mandatoryParametersCheck(mandatoryParams, PageType.Teacher, session, request, response)) return;
+        if(!Utils.mandatoryParametersCheck(mandatoryParams, PageType.Teacher, session, request, response)) return;
 
         if(session.getAttribute("examSession") == null){
             response.sendRedirect("courses");
@@ -97,7 +94,7 @@ public class GradeStudentServlet extends HttpServlet {
             //Ottengo l'id corso per il redirect
             courseID = con.getMySQLCoursesDAO().getCourseIDFromExamSessionID(examSession);
         } catch (SQLException e) {
-            ThymeleafUtils.redirectToDBErrorPage(response);
+            Utils.redirectToDBErrorPage(response);
             return;
         }
 

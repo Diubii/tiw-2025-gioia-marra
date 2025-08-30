@@ -3,24 +3,18 @@ package it.polimi.tiw2025gioiamarra.servlets.teacher;
 import it.polimi.tiw2025gioiamarra.items.Enrollment;
 import it.polimi.tiw2025gioiamarra.items.GradingStatus;
 import it.polimi.tiw2025gioiamarra.items.PageType;
-import it.polimi.tiw2025gioiamarra.items.Student;
 import it.polimi.tiw2025gioiamarra.utils.DatabaseConnection;
 import it.polimi.tiw2025gioiamarra.utils.ThymeleafUtils;
+import it.polimi.tiw2025gioiamarra.utils.Utils;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import org.apache.commons.dbutils.DbUtils;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 @WebServlet(name="enrolledStudentsServlet", value="/enrolled-students")
 public class EnrolledStudentsServlet extends HttpServlet {
@@ -28,7 +22,7 @@ public class EnrolledStudentsServlet extends HttpServlet {
         HttpSession session = request.getSession();
 
         String[] mandatoryParams = {"course", "session"};
-        if(!ThymeleafUtils.mandatoryParametersCheck(mandatoryParams, PageType.Teacher, session, request, response)) return;
+        if(!Utils.mandatoryParametersCheck(mandatoryParams, PageType.Teacher, session, request, response)) return;
         ArrayList<Enrollment> enrollments;
 
         //Handling order by selected column
@@ -60,7 +54,7 @@ public class EnrolledStudentsServlet extends HttpServlet {
             enrollments = con.getMySQLExamSessionsDAO().getEnrolledStudents(courseID, sessionID, teacherID, sortDirection, sort);
             grades = con.getGrades();
         } catch (SQLException e) {
-            ThymeleafUtils.redirectToDBErrorPage(response);
+            Utils.redirectToDBErrorPage(response);
             return;
         }
 

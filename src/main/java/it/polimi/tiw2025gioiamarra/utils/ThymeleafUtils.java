@@ -1,22 +1,14 @@
 package it.polimi.tiw2025gioiamarra.utils;
 
-import it.polimi.tiw2025gioiamarra.items.PageType;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
 import org.thymeleaf.templateresolver.WebApplicationTemplateResolver;
 import org.thymeleaf.web.servlet.JakartaServletWebApplication;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 public class ThymeleafUtils {
     public static TemplateEngine getTemplateEngine(WebApplicationTemplateResolver templateResolver) {
@@ -49,97 +41,5 @@ public class ThymeleafUtils {
     public static String getRightPath(HttpServletRequest request) {
         String async = request.getHeader("X-Fragment-Request");
         return async != null && async.equals("true") ? "fragmentWrapper" : "generalLayout";
-    }
-
-    public static boolean mandatoryParametersCheck(String[] mandatoryParameters, PageType pageType, HttpSession session, HttpServletRequest request, HttpServletResponse response) throws IOException {
-        switch (pageType) {
-            case Common -> {
-                if ((session.getAttribute("teacher") == null && session.getAttribute("student") == null) || session.getAttribute("type") == null) {
-                    response.sendRedirect("student-login");
-                    return false;
-                }
-            }
-            case Student -> {
-                if (session.getAttribute("student") == null || session.getAttribute("type") == null) {
-                    response.sendRedirect("student-login");
-                    return false;
-                }
-            }
-            case Teacher -> {
-                if (session.getAttribute("teacher") == null || session.getAttribute("type") == null) {
-                    response.sendRedirect("teacher-login");
-                    return false;
-                }
-            }
-        }
-
-        for (String param : mandatoryParameters) {
-            switch (param.toLowerCase()) {
-                case "course" -> {
-                    if (!coursesParameterCheck(request, response)) return false;
-                }
-                case "session" -> {
-                    if (!sessionParameterCheck(request, response)) return false;
-                }
-                case "student" -> {
-                    if (!studentParameterCheck(request, response)) return false;
-                }
-                case "report" -> {
-                    if (!reportParameterCheck(request, response)) return false;
-                }
-                default -> {
-                }
-            }
-        }
-
-        return true;
-    }
-
-    private static boolean coursesParameterCheck(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String courseParam = request.getParameter("course");
-
-        if (courseParam == null || courseParam.isEmpty()) {
-            response.sendRedirect("courses");
-            return false;
-        }
-        return true;
-    }
-
-    private static boolean sessionParameterCheck(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String courseParam = request.getParameter("course");
-        String sessionParam = request.getParameter("session");
-
-        if ((sessionParam == null || sessionParam.isEmpty()) && (courseParam != null && !courseParam.isEmpty())) {
-            response.sendRedirect("exam-sessions?course=" + courseParam);
-            return false;
-        }
-        return true;
-    }
-
-    private static boolean studentParameterCheck(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String courseParam = request.getParameter("course");
-        String sessionParam = request.getParameter("session");
-        String studentParam = request.getParameter("student");
-
-        if ((studentParam == null || studentParam.isEmpty()) && (sessionParam != null && !sessionParam.isEmpty()) && (courseParam != null && !courseParam.isEmpty())) {
-            response.sendRedirect("enrolled-students?course=" + courseParam + "&session=" + sessionParam);
-            return false;
-        }
-        return true;
-    }
-
-    private static boolean reportParameterCheck(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String reportParam = request.getParameter("report");
-        String sessionParam = request.getParameter("session");
-
-        if ((reportParam == null || reportParam.isEmpty()) || (sessionParam == null || sessionParam.isEmpty())) {
-            response.sendRedirect("report-list");
-            return false;
-        }
-        return true;
-    }
-
-    public static void redirectToDBErrorPage(HttpServletResponse response) throws IOException {
-        response.sendRedirect("db-error");
     }
 }

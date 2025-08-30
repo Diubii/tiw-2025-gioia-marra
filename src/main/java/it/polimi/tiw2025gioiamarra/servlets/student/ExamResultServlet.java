@@ -1,20 +1,18 @@
 package it.polimi.tiw2025gioiamarra.servlets.student;
 
 import it.polimi.tiw2025gioiamarra.daos.interfaces.ExamSessionsDAO;
-import it.polimi.tiw2025gioiamarra.items.*;
+import it.polimi.tiw2025gioiamarra.items.Enrollment;
+import it.polimi.tiw2025gioiamarra.items.PageType;
 import it.polimi.tiw2025gioiamarra.utils.DatabaseConnection;
 import it.polimi.tiw2025gioiamarra.utils.ThymeleafUtils;
+import it.polimi.tiw2025gioiamarra.utils.Utils;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import org.apache.commons.dbutils.DbUtils;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -26,7 +24,7 @@ public class ExamResultServlet extends HttpServlet {
         HttpSession session = request.getSession();
 
         String[] mandatoryParams = {"course", "session"};
-        if (!ThymeleafUtils.mandatoryParametersCheck(mandatoryParams, PageType.Student, session, request, response))
+        if (!Utils.mandatoryParametersCheck(mandatoryParams, PageType.Student, session, request, response))
             return;
 
         int courseID = Integer.parseInt(request.getParameter("course"));
@@ -51,7 +49,7 @@ public class ExamResultServlet extends HttpServlet {
             courseName = con.getMySQLCoursesDAO().getCourse(enrollment.courseID()).name();
             dateTime = examSessionsDAO.getExamSession(examSessionID).dateTime();
         } catch (SQLException e) {
-            ThymeleafUtils.redirectToDBErrorPage(response);
+            Utils.redirectToDBErrorPage(response);
             return;
         }
 

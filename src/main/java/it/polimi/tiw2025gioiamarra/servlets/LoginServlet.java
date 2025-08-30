@@ -2,7 +2,7 @@ package it.polimi.tiw2025gioiamarra.servlets;
 
 import it.polimi.tiw2025gioiamarra.items.LoginType;
 import it.polimi.tiw2025gioiamarra.utils.DatabaseConnection;
-import it.polimi.tiw2025gioiamarra.utils.ThymeleafUtils;
+import it.polimi.tiw2025gioiamarra.utils.Utils;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -42,7 +42,7 @@ public class LoginServlet extends HttpServlet {
                 default -> throw new IllegalArgumentException("Unexpected value: " + request.getAttribute("type"));
             }
         } catch(SQLException | IllegalArgumentException e){
-            ThymeleafUtils.redirectToDBErrorPage(response);
+            Utils.redirectToDBErrorPage(response);
         }
     }
 }
