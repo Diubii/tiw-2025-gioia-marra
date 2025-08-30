@@ -6,6 +6,7 @@ import it.polimi.tiw2025gioiamarra.items.LoginType;
 import it.polimi.tiw2025gioiamarra.items.PageType;
 import it.polimi.tiw2025gioiamarra.utils.DatabaseConnection;
 import it.polimi.tiw2025gioiamarra.utils.ThymeleafUtils;
+import it.polimi.tiw2025gioiamarra.utils.Utils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -23,7 +24,7 @@ public class CoursesServlet extends HttpServlet {
         HttpSession session = request.getSession();
 
         String[] mandatoryParams = {};
-        if (!ThymeleafUtils.mandatoryParametersCheck(mandatoryParams, PageType.Common, session, request, response))
+        if (!Utils.mandatoryParametersCheck(mandatoryParams, PageType.Common, session, request, response))
             return;
 
         session.removeAttribute("examSession");
@@ -40,7 +41,7 @@ public class CoursesServlet extends HttpServlet {
                 default -> throw new IllegalArgumentException("Unexpected value: " + session.getAttribute("type"));
             }
         } catch (SQLException | IllegalArgumentException e) {
-            ThymeleafUtils.redirectToDBErrorPage(response);
+            Utils.redirectToDBErrorPage(response);
             return;
         }
 

@@ -1,7 +1,6 @@
 package it.polimi.tiw2025gioiamarra.daos.MySQLImplementations;
 
 import it.polimi.tiw2025gioiamarra.daos.interfaces.StudentDAO;
-import it.polimi.tiw2025gioiamarra.items.GradingStatus;
 import it.polimi.tiw2025gioiamarra.items.LoginType;
 import it.polimi.tiw2025gioiamarra.items.Student;
 import jakarta.servlet.http.HttpSession;

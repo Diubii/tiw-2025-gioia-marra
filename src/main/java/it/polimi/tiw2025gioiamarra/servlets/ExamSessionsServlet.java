@@ -5,6 +5,7 @@ import it.polimi.tiw2025gioiamarra.items.LoginType;
 import it.polimi.tiw2025gioiamarra.items.PageType;
 import it.polimi.tiw2025gioiamarra.utils.DatabaseConnection;
 import it.polimi.tiw2025gioiamarra.utils.ThymeleafUtils;
+import it.polimi.tiw2025gioiamarra.utils.Utils;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,7 +23,7 @@ public class ExamSessionsServlet extends HttpServlet {
         HttpSession session = request.getSession();
 
         String[] mandatoryParams = {"course"};
-        if(!ThymeleafUtils.mandatoryParametersCheck(mandatoryParams, PageType.Common, session, request, response)) return;
+        if(!Utils.mandatoryParametersCheck(mandatoryParams, PageType.Common, session, request, response)) return;
 
         ArrayList<ExamSession> examSessions;
         String courseName;
@@ -45,7 +46,7 @@ public class ExamSessionsServlet extends HttpServlet {
 
             courseName = con.getMySQLCoursesDAO().getCourseNameFromCourseID(courseID);
         } catch (SQLException e) {
-            ThymeleafUtils.redirectToDBErrorPage(response);
+            Utils.redirectToDBErrorPage(response);
             return;
         }
 
