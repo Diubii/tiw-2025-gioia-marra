@@ -20,11 +20,28 @@ public class LoginServlet extends HttpServlet {
             return;
         }
 
+        String studentNumber = request.getParameter("studentNumber");
+        String teacherID = request.getParameter("teacherID");
+
+        Integer id = null;
+        try {
+            if (studentNumber != null) id = Integer.parseInt(studentNumber);
+            else if (teacherID != null) id = Integer.parseInt(teacherID);
+        } catch (NumberFormatException e) {
+            if(studentNumber != null) response.sendRedirect("student-login?error=1");
+            else response.sendRedirect("teacher-login?error=1");
+            return;
+        }
+
+        if(id == null){
+            response.sendRedirect("student-login?error=1");
+            return;
+        }
+
         try(DatabaseConnection con = new DatabaseConnection()){
             String password = request.getParameter("password");
             switch (request.getAttribute("type")) {
                 case LoginType.Student -> {
-                    int id = Integer.parseInt(request.getParameter("studentNumber"));
                     if (con.getMySQLStudentDAO().login(id, password, request.getSession()))
                         response.sendRedirect("courses");
                     else
@@ -32,17 +49,20 @@ public class LoginServlet extends HttpServlet {
                 }
 
                 case LoginType.Teacher -> {
-                    int id = Integer.parseInt(request.getParameter("teacherID"));
                     if (con.getMySQLTeacherDAO().login(id, password, request.getSession()))
                         response.sendRedirect("courses");
                     else
                         response.sendRedirect("teacher-login?error=1");
                 }
 
-                default -> throw new IllegalArgumentException("Unexpected value: " + request.getAttribute("type"));
+                default -> throw new IllegalStateException("Unexpected value: " + request.getAttribute("type"));
             }
-        } catch(SQLException | IllegalArgumentException e){
+        } catch(SQLException | IllegalStateException e){
             Utils.redirectToDBErrorPage(response);
+        }
+        catch (NumberFormatException e){
+            if(studentNumber != null) response.sendRedirect("student-login?error=1");
+            if(teacherID != null) response.sendRedirect("teacher-login?error=1");
         }
     }
 }

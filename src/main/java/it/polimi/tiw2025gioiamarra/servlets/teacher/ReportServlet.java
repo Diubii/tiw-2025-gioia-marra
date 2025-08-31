@@ -27,8 +27,17 @@ public class ReportServlet extends HttpServlet{
         String[] mandatoryParams = {"session", "report"};
         if(!Utils.mandatoryParametersCheck(mandatoryParams, PageType.Teacher, session, request, response)) return;
 
-        int reportID = Integer.parseInt(request.getParameter("report"));
-        int sessionID = Integer.parseInt(request.getParameter("session"));
+        Integer reportID = null;
+        Integer examSessionID = null;
+        try {
+            reportID = Integer.parseInt(request.getParameter("report"));
+            examSessionID = Integer.parseInt(request.getParameter("session"));
+        }
+        catch (NumberFormatException e) {
+            response.sendRedirect("report-list");
+            return;
+        }
+
         int teacherID = (Integer) session.getAttribute("teacher");
         //int courseID;
 
@@ -37,7 +46,7 @@ public class ReportServlet extends HttpServlet{
 
         try (DatabaseConnection con = new DatabaseConnection()) {
             ReportsDAO reportsDAO = con.getMySQLReportsDAO();
-            report = reportsDAO.getReport(reportID, sessionID, teacherID);
+            report = reportsDAO.getReport(reportID, examSessionID, teacherID);
             if(report == null) {
                 response.sendRedirect("report-list");
                 return;

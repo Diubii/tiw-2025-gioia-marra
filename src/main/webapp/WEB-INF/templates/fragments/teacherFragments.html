@@ -74,7 +74,10 @@
       </tr>
       </thead>
       <tbody class="divide-y divide-gray-200 bg-white">
-      <tr th:each="enrollment : ${enrollments}">
+      <tr th:if="${enrollments == null || enrollments.isEmpty()}">
+          <td colspan="8" class="px-6 py-4 whitespace-nowrap text-base text-gray-900">Nessuno studente iscritto a questo appello.</td>
+      </tr>
+      <tr th:unless="${enrollments == null}" th:each="enrollment : ${enrollments}">
         <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900" th:text="${enrollment.student().id()}"></td>
         <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900" th:text="|${enrollment.student().surname()} ${enrollment.student().name()}|"></td>
         <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900" th:text="${enrollment.student().email()}"></td>
@@ -82,7 +85,7 @@
         <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900" th:text="${enrollment.grade()}"></td>
         <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900" th:text="${enrollment.gradingStatus().toString()}"></td>
         <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900"  th:text="${enrollment.verbalID()}"></td>
-        <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900" ><a th:if="${enrollment.gradingStatus().name() == 'NotInserted' or enrollment.gradingStatus().name() == 'Inserted'}" th:href="|@{grade-student}?student=${enrollment.student().id()}&course=${enrollment.courseID()}&session=${enrollment.examSessionID()}|"><img class="s" style="width: 1em; height: 1em;" th:src="@{static/svg/pencil-square.svg}" alt="Modifica"/></a></td>
+        <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900"><a th:if="${enrollment.gradingStatus().name() == 'NotInserted' or enrollment.gradingStatus().name() == 'Inserted'}" th:href="|@{grade-student}?student=${enrollment.student().id()}&course=${enrollment.courseID()}&session=${enrollment.examSessionID()}|"><img class="s" style="width: 1em; height: 1em;" th:src="@{static/svg/pencil-square.svg}" alt="Modifica"/></a></td>
       </tr>
       </tbody>
     </table>
@@ -135,7 +138,10 @@
         </tr>
         </thead>
         <tbody class="divide-y divide-gray-200 bg-white">
-        <tr th:each="report : ${reports}">
+        <tr th:if="${reports == null || reports.isEmpty()}">
+            <td colspan="8" class="px-6 py-4 whitespace-nowrap text-base text-gray-900">Non hai creato nessun verbale.</td>
+        </tr>
+        <tr th:unless="${reports == null}" th:each="report : ${reports}">
             <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900" th:text="${report.id()}"></td>
             <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900" th:text="${report.reportDate()} "></td>
             <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900" th:text="${report.courseID()}"></td>

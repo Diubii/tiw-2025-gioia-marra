@@ -22,8 +22,17 @@ public class PublishGradesServlet extends HttpServlet {
         String[] mandatoryParams = {"course", "session"};
         if(!Utils.mandatoryParametersCheck(mandatoryParams, PageType.Teacher, session, request, response)) return;
 
-        int courseID = Integer.parseInt(request.getParameter("course"));
-        int examSessionID = Integer.parseInt(request.getParameter("session"));
+        Integer courseID = null;
+        Integer examSessionID = null;
+
+        try {
+            courseID = Integer.parseInt(request.getParameter("course"));
+            examSessionID = Integer.parseInt(request.getParameter("session"));
+        } catch (NumberFormatException e) {
+            if(courseID == null) response.sendRedirect("courses");
+            else response.sendRedirect("exam-sessions?course=" + courseID);
+            return;
+        }
 
         String sort = request.getParameter("sort");
         if(sort == null || sort.isEmpty()) sort = "matricola";

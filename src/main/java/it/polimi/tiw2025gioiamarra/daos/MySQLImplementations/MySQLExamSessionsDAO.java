@@ -65,11 +65,12 @@ public class MySQLExamSessionsDAO implements ExamSessionsDAO {
     }
 
     @Override
-    public ArrayList<ExamSession> getTeacherExamSessions(int courseID) throws SQLException {
+    public ArrayList<ExamSession> getTeacherExamSessions(int courseID, int teacherID) throws SQLException {
         ArrayList<ExamSession> examSessions = new ArrayList<>();
 
-        try(PreparedStatement ps = connection.prepareStatement("SELECT * FROM appello WHERE idCorso = ? ORDER BY dataOra DESC")){
+        try(PreparedStatement ps = connection.prepareStatement("SELECT * FROM appello JOIN corso on appello.idCorso = corso.idCorso WHERE corso.idCorso = ? AND corso.codiceDocente = ? ORDER BY dataOra DESC")){
             ps.setInt(1, courseID);
+            ps.setInt(2, teacherID);
             try(ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     ExamSession examSession = new ExamSession(rs.getInt("idAppello"), courseID, rs.getDate("dataOra"), true);

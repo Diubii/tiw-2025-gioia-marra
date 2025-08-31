@@ -58,7 +58,13 @@
         </tr>
         </thead>
         <tbody class="divide-y divide-gray-200 bg-white">
-        <tr th:each="examSession : ${examSessions}">
+        <!--/*@thymesVar id="examSessions" type="java.util.ArrayList<it.polimi.tiw2025gioiamarra.items.ExamSession>"*/-->
+        <tr th:if="${examSessions == null || examSessions.isEmpty()}">
+            <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900 text-center">
+                Nessun appello disponibile per questo corso.
+            </td>
+        </tr>
+        <tr th:unless="${examSessions == null}" th:each="examSession : ${examSessions}">
             <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900 text-center">
                 <div class="flex justify-center items-center gap-2">
                     <!--<a
@@ -90,7 +96,7 @@
 
 
 <!-- FOOTER -->
-<footer th:fragment="site-footer" class="bg-gray-800 text-white py-6 w-full absolute bottom-0 left-0">
+<footer th:fragment="site-footer" class="bg-gray-800 text-white py-6 w-full bottom-0 left-0">
     <div class="w-full px-4 flex justify-center items-center">
         <p class="text-sm text-center">
             2025 T.I.W. - Verbalizzazione esami -
