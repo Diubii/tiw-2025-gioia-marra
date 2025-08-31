@@ -25,8 +25,18 @@ public class GenerateReportServlet extends HttpServlet{
         String[] mandatoryParams = {"course", "session"};
         if(!Utils.mandatoryParametersCheck(mandatoryParams, PageType.Teacher, session, request, response)) return;
 
-        int courseID = Integer.parseInt(request.getParameter("course"));
-        int sessionID = Integer.parseInt(request.getParameter("session"));
+        Integer courseID = null;
+        Integer sessionID = null;
+
+        try {
+            courseID = Integer.parseInt(request.getParameter("course"));
+            sessionID = Integer.parseInt(request.getParameter("session"));
+        }
+        catch (NumberFormatException e) {
+            if(courseID != null) response.sendRedirect("exam-sessions?course=" + courseID);
+            else response.sendRedirect("courses");
+            return;
+        }
 
         int reportID;
 

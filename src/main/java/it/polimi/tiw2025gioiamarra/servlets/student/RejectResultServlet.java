@@ -22,8 +22,20 @@ public class RejectResultServlet extends HttpServlet {
         if(!Utils.mandatoryParametersCheck(mandatoryParams, PageType.Student, session, request, response)) return;
 
         int studentID = (int) session.getAttribute("student");
-        int courseID = Integer.parseInt(request.getParameter("course"));
-        int examSessionID = Integer.parseInt(request.getParameter("session"));
+
+        Integer courseID = null;
+        Integer examSessionID = null;
+
+        try {
+            courseID = Integer.parseInt(request.getParameter("course"));
+            examSessionID = Integer.parseInt(request.getParameter("session"));
+        }
+        catch (NumberFormatException e) {
+            if(courseID == null) response.sendRedirect("courses");
+            else response.sendRedirect("exam-sessions?course=" + courseID);
+            return;
+        }
+
 
         try (DatabaseConnection con = new DatabaseConnection()) {
             con.getMySQLExamSessionsDAO().rejectGrade(studentID, examSessionID);

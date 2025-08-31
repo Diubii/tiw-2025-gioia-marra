@@ -72,7 +72,7 @@ public class MySQLReportsDAO implements ReportsDAO {
     }
 
     @Override
-    public int generateReport(int sessionID) throws SQLException {
+    public int generateReport(int sessionID) throws SQLException { //TODO: Mettere in sicurezza con codiceDocente
         connection.setAutoCommit(false);
 
         int idVerbale = -1;

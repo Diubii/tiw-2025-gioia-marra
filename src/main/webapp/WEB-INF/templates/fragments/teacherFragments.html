@@ -50,7 +50,10 @@
             </tr>
             </thead>
             <tbody class="divide-y divide-gray-200 bg-white">
-            <tr th:each="enrollment : ${enrollments}">
+            <tr th:if="${enrollments == null || enrollments.isEmpty()}">
+                <td colspan="8" class="px-6 py-4 whitespace-nowrap text-base text-gray-900">Nessuno studente iscritto a questo appello.</td>
+            </tr>
+            <tr th:unless="${enrollments == null}" th:each="enrollment : ${enrollments}">
                 <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900"
                     th:text="${enrollment.student().id()}"></td>
                 <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900"
@@ -89,46 +92,50 @@
          style="background: rgba(0,0,0,0.5);"
          hidden>
         <div class="bg-white p-[2em] rounded-lg text-center">
+            <div class="max-h-200 overflow-y-scroll">
+                <table id="multiInsertionTable" class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="px-6 py-3 text-center text-base font-semibold text-gray-700 uppercase tracking-wider">
+                                <a data-sortby="matricola" class="inline-flex items-center space-x-1">
+                                    Matricola
+                                </a>
+                            </th>
+                            <th class="px-6 py-3 text-center text-base font-semibold text-gr+ay-700 uppercase tracking-wider">
+                                <a data-sortby="cognome" class="inline-flex items-center space-x-1">
+                                    Cognome e nome
+                                </a>
+                            </th>
+                            <th class="px-6 py-3 text-center text-base font-semibold text-gray-700 uppercase tracking-wider">
+                                <a data-sortby="voto" class="inline-flex items-center space-x-1">
+                                    Voto
+                                </a>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200 bg-white">
 
-            <table id="multiInsertionTable" class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-100">
-                <tr>
-                    <th class="px-6 py-3 text-center text-base font-semibold text-gray-700 uppercase tracking-wider">
-                        <a data-sortby="matricola" class="inline-flex items-center space-x-1">
-                            Matricola
-                        </a>
-                    </th>
-                    <th class="px-6 py-3 text-center text-base font-semibold text-gray-700 uppercase tracking-wider">
-                        <a data-sortby="cognome" class="inline-flex items-center space-x-1">
-                            Cognome e nome
-                        </a>
-                    </th>
-                    <th class="px-6 py-3 text-center text-base font-semibold text-gray-700 uppercase tracking-wider">
-                        <a data-sortby="voto" class="inline-flex items-center space-x-1">
-                            Voto
-                        </a>
-                    </th>
-                </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-200 bg-white">
-                <tr th:each="enrollment : ${enrollments}" th:if="${enrollment.gradingStatus().toString() == 'Non inserito'}">
-                    <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900"
-                        th:text="${enrollment.student().id()}"></td>
-                    <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900"
-                        th:text="|${enrollment.student().surname()} ${enrollment.student().name()}|"></td>
-                    <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900">
-                        <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm text-center bg-white disabled:bg-gray-100 disabled:text-gray-500"
-                                name="grade">
-                            <option th:each="grade : ${grades}" th:value="${grade}" th:text="${grade}" name="grade"></option>
-                        </select>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+                    <!--/*@thymesVar id="enrollments" type="java.util.ArrayList<it.polimi.tiw2025gioiamarra.items.Enrollment>"*/-->
+                        <tr th:each="enrollment : ${enrollments}" th:if="${enrollment.gradingStatus().toString() == 'Non inserito' || enrollment.gradingStatus().toString() == 'Inserito'}">
+                            <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900"
+                                th:text="${enrollment.student().id()}"></td>
+                            <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900"
+                                th:text="|${enrollment.student().surname()} ${enrollment.student().name()}|"></td>
+                            <td class="px-6 py-4 whitespace-nowrap text-base text-gray-900">
+                                <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm text-center bg-white disabled:bg-gray-100 disabled:text-gray-500"
+                                        name="grade">
+                                    <option th:each="grade : ${grades}" th:selected="${grade == enrollment.grade()}" th:value="${grade}" th:text="${grade}" name="grade"></option>
+                                </select>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
 
-            <!--passo parametri
-            <input type="hidden" name="course" th:value="${course.id()}"/>
-            <input type="hidden" name="sessionID" th:value="${enrollment.examSessionID()}"/>-->
+
+                <!--passo parametri
+                <input type="hidden" name="course" th:value="${course.id()}"/>
+                <input type="hidden" name="sessionID" th:value="${enrollment.examSessionID()}"/>-->
+            </div>
 
             <input id="cancelButton" type="button" class="bg-gray-400 text-white font-bold py-2 px-4 rounded-md"
                    value="ANNULLA"/>

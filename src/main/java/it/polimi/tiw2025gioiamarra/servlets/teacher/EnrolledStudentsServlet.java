@@ -44,10 +44,21 @@ public class EnrolledStudentsServlet extends HttpServlet {
             sortDirection = "DESC";
         }
 
-        int courseID = Integer.parseInt(request.getParameter("course"));
-        int sessionID = Integer.parseInt(request.getParameter("session"));
-        int teacherID = (Integer) session.getAttribute( "teacher");
 
+        Integer courseID = null;
+        Integer sessionID = null;
+
+        try{
+            courseID = Integer.parseInt(request.getParameter("course"));
+            sessionID = Integer.parseInt(request.getParameter("session"));
+        }
+        catch (NumberFormatException e){
+            if(courseID != null) response.sendRedirect("exam-sessions?course=" + courseID);
+            else response.sendRedirect("courses");
+            return;
+        }
+
+        int teacherID = (Integer) session.getAttribute( "teacher");
         ArrayList<String> grades;
 
         try(DatabaseConnection con = new DatabaseConnection()) {

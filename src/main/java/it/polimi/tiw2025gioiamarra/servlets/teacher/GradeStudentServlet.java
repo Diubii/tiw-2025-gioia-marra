@@ -26,9 +26,20 @@ public class GradeStudentServlet extends HttpServlet {
         String[] mandatoryParams = {"course", "session", "student"};
         if(!Utils.mandatoryParametersCheck(mandatoryParams, PageType.Teacher, session, request, response)) return;
 
-        int studentNumber = Integer.parseInt(request.getParameter("student"));
-        int courseID = Integer.parseInt(request.getParameter("course"));
-        int examSessionID = Integer.parseInt(request.getParameter("session"));
+        Integer courseID = null;
+        Integer examSessionID = null;
+        Integer studentNumber = null;
+        try {
+            courseID = Integer.parseInt(request.getParameter("course"));
+            examSessionID = Integer.parseInt(request.getParameter("session"));
+            studentNumber = Integer.parseInt(request.getParameter("student"));
+        } catch (NumberFormatException e) {
+            if(courseID == null) response.sendRedirect("courses");
+            else if(examSessionID == null) response.sendRedirect("exam-sessions?course=" + courseID);
+            else response.sendRedirect("enrolled-students?course=" + courseID + "&session=" + examSessionID + "&sort=matricola" + "&order=asc");
+            return;
+        }
+
         int teacherID = (Integer) session.getAttribute("teacher");
 
         Enrollment enrollment;

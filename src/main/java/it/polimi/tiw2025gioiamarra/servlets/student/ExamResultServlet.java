@@ -27,12 +27,21 @@ public class ExamResultServlet extends HttpServlet {
         if (!Utils.mandatoryParametersCheck(mandatoryParams, PageType.Student, session, request, response))
             return;
 
-        int courseID = Integer.parseInt(request.getParameter("course"));
+        Integer courseID = null;
+        Integer examSessionID = null;
+
+        try {
+            courseID = Integer.parseInt(request.getParameter("course"));
+            examSessionID = Integer.parseInt(request.getParameter("session"));
+        } catch (NumberFormatException e) {
+            if(courseID == null) response.sendRedirect("courses");
+            else response.sendRedirect("exam-sessions?course=" + courseID);
+            return;
+        }
 
         ArrayList<Integer> appelliIscritto;
 
         int studentID = (Integer) session.getAttribute("student");
-        int examSessionID = Integer.parseInt(request.getParameter("session"));
         Enrollment enrollment;
         String courseName;
         Date dateTime;

@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.jboss.weld.exceptions.NullInstanceException;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -27,26 +28,47 @@ public class ExamSessionsServlet extends HttpServlet {
 
         ArrayList<ExamSession> examSessions;
         String courseName;
+
+        Integer courseID = null;
+        try {
+            courseID = Integer.parseInt(request.getParameter("course"));
+        }
+        catch (NumberFormatException e) {
+            response.sendRedirect("courses");
+            return;
+        }
+
+
         try(DatabaseConnection con = new DatabaseConnection()) {
-            int courseID = Integer.parseInt(request.getParameter("course"));
+
+            courseName = con.getMySQLCoursesDAO().getCourseNameFromCourseID(courseID);
+            if(courseName == null){
+                throw new NullInstanceException("Course not found.");
+            }
 
             switch ((LoginType) session.getAttribute("type")){
                 case LoginType.Student -> {
                     int studentID = (int) session.getAttribute("student");
                     examSessions = con.getMySQLExamSessionsDAO().getStudentExamSessions(courseID, studentID);
                 }
-                case LoginType.Teacher -> examSessions = con.getMySQLExamSessionsDAO().getTeacherExamSessions(courseID);
+                case LoginType.Teacher -> {
+                    int teacherID = (int) session.getAttribute("teacher");
+                    examSessions = con.getMySQLExamSessionsDAO().getTeacherExamSessions(courseID, teacherID);
+                }
                 default -> examSessions = new ArrayList<>();
             }
 
-            if(examSessions == null || examSessions.isEmpty()) {
-                response.sendRedirect("courses");
-                return;
+            if(examSessions == null) {
+                throw new NullInstanceException("Exam sessions not found.");
             }
 
             courseName = con.getMySQLCoursesDAO().getCourseNameFromCourseID(courseID);
         } catch (SQLException e) {
             Utils.redirectToDBErrorPage(response);
+            return;
+        }
+        catch (NullInstanceException e) {
+            response.sendRedirect("courses");
             return;
         }
 
