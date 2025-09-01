@@ -40,7 +40,7 @@ public class PublishGradesServlet extends HttpServlet {
         if(order == null || order.isEmpty()) order = "asc";
 
         try (DatabaseConnection con = new DatabaseConnection()) {
-            con.getMySQLExamSessionsDAO().publishGrades(examSessionID);
+            con.getMySQLExamSessionsDAO().publishGrades(examSessionID, (Integer) session.getAttribute("teacher"));
         } catch (SQLException e) {
             Utils.redirectToDBErrorPage(response);
             return;

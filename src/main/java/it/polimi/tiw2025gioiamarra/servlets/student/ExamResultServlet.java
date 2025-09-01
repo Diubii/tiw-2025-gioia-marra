@@ -49,7 +49,7 @@ public class ExamResultServlet extends HttpServlet {
         Course course;
         Date dateTime;
 
-        try (DatabaseConnection con = new DatabaseConnection()) { //TODO: Redirigere se parametri errati o studente non iscritto
+        try (DatabaseConnection con = new DatabaseConnection()) {
             ExamSessionsDAO examSessionsDAO = con.getMySQLExamSessionsDAO();
 
             CoursesDAO coursesDAO = con.getMySQLCoursesDAO();

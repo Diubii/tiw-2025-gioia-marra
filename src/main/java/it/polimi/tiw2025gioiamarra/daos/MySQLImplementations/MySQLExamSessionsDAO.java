@@ -97,6 +97,23 @@ public class MySQLExamSessionsDAO implements ExamSessionsDAO {
     }
 
     @Override
+    public ArrayList<Integer> getTeacherExamSessionsIDs(int courseID, int teacherID) throws SQLException {
+        ArrayList<Integer> examSessionsIDs = new ArrayList<>();
+
+        try(PreparedStatement ps = connection.prepareStatement("SELECT idAppello FROM appello JOIN corso on appello.idCorso = corso.idCorso WHERE corso.idCorso = ? AND corso.codiceDocente = ? ORDER BY dataOra DESC")){
+            ps.setInt(1, courseID);
+            ps.setInt(2, teacherID);
+            try(ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    examSessionsIDs.add(rs.getInt("idAppello"));
+                }
+            }
+        }
+        return examSessionsIDs;
+    }
+
+
+    @Override
     public ArrayList<ExamSession> getStudentExamSessions(int courseID, int studentID) throws SQLException {
         ArrayList<ExamSession> examSessions = new ArrayList<>();
 
@@ -210,9 +227,10 @@ public class MySQLExamSessionsDAO implements ExamSessionsDAO {
 
 
     @Override
-    public void publishGrades(int examSessionID) throws SQLException { //TODO: Mettere in sicurezza questa query (il prof che sta pubblicando è responsabile dell'appello?)
-        try(PreparedStatement ps = connection.prepareStatement("UPDATE esame SET statoValutazione='Published' WHERE statoValutazione='Inserted' AND idAppello=?")) {
+    public void publishGrades(int examSessionID, int teacherID) throws SQLException {
+        try(PreparedStatement ps = connection.prepareStatement("UPDATE esame e JOIN tiw.appello a on a.idAppello = e.idAppello JOIN tiw.corso c on c.idCorso = a.idCorso JOIN tiw.docente d on c.codiceDocente = d.codiceDocente SET statoValutazione='Published' WHERE e.statoValutazione='Inserted' AND a.idAppello=? AND c.codiceDocente=?")) {
             ps.setInt(1, examSessionID);
+            ps.setInt(2, teacherID);
             ps.execute();
         }
     }

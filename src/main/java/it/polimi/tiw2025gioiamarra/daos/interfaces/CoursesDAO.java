@@ -7,7 +7,9 @@ import java.util.ArrayList;
 
 public interface CoursesDAO {
     ArrayList<Course> getStudentCourses(int studentID) throws SQLException;
+    ArrayList<Integer> getStudentCoursesIDs(int studentID) throws SQLException;
     ArrayList<Course> getTeacherCourses(int teacherID) throws SQLException;
+    ArrayList<Integer> getTeacherCoursesIDs(int teacherID) throws SQLException;
     Course getCourse(int courseID) throws SQLException;
     Integer getCourseIDFromExamSessionID(int examSessionID) throws SQLException;
     String getCourseNameFromCourseID(int courseID) throws SQLException;
