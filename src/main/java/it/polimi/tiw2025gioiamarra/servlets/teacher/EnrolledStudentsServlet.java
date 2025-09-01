@@ -39,11 +39,7 @@ public class EnrolledStudentsServlet extends HttpServlet {
 //        String orderBy = validSortFields.getOrDefault(sort, "matricola"); // default
 
         String order = request.getParameter("order");
-        String sortDirection = "ASC";
-        if ("desc".equalsIgnoreCase(order)) {
-            sortDirection = "DESC";
-        }
-
+        order = order == null ? "asc" : order;
 
         Integer courseID = null;
         Integer sessionID = null;
@@ -62,7 +58,7 @@ public class EnrolledStudentsServlet extends HttpServlet {
         ArrayList<String> grades;
 
         try(DatabaseConnection con = new DatabaseConnection()) {
-            enrollments = con.getMySQLExamSessionsDAO().getEnrolledStudents(courseID, sessionID, teacherID, sortDirection, sort);
+            enrollments = con.getMySQLExamSessionsDAO().getEnrolledStudents(courseID, sessionID, teacherID, sort, order);
             grades = con.getGrades();
         } catch (SQLException e) {
             Utils.redirectToDBErrorPage(response);

@@ -22,13 +22,28 @@ public class MySQLExamSessionsDAO implements ExamSessionsDAO {
 
     @Override
     public ArrayList<Enrollment> getEnrolledStudents(int courseID, int examSessionID, int teacherID, String sort, String sortDirection) throws SQLException {
+        String orderBy;
+        switch (sort.toLowerCase()) {
+            case "cognome" -> orderBy = "cognome";
+            case "email" -> orderBy = "email";
+            case "corsolaurea" -> orderBy = "corsoLaurea";
+            case "voto" -> orderBy = "voto";
+            case "statovalutazione" -> orderBy = "statoValutazione";
+            case "idverbale" -> orderBy = "idVerbale";
+            default -> orderBy = "matricola";
+        }
+
+        String direction;
+        direction = "ASC";
+        if ("desc".equalsIgnoreCase(sortDirection)) {
+            direction = "DESC";
+        }
+
         ArrayList<Enrollment> enrollments = new ArrayList<>();
-        try(PreparedStatement ps = connection.prepareStatement("SELECT matricola, cognome, studente.nome, email, corsoLaurea, voto, statoValutazione, idVerbale, idAppello FROM esame NATURAL JOIN iscrizioneCorso NATURAL JOIN studente JOIN corso ON iscrizioneCorso.idCorso = corso.idCorso WHERE corso.idCorso = ? AND idAppello = ? AND codiceDocente = ? ORDER BY ? ?")) {
+        try(PreparedStatement ps = connection.prepareStatement("SELECT matricola, cognome, studente.nome, email, corsoLaurea, voto, statoValutazione, idVerbale, idAppello FROM esame NATURAL JOIN iscrizioneCorso NATURAL JOIN studente JOIN corso ON iscrizioneCorso.idCorso = corso.idCorso WHERE corso.idCorso = ? AND idAppello = ? AND codiceDocente = ? ORDER BY " + orderBy + " " + direction)) {
             ps.setInt(1, courseID);
             ps.setInt(2, examSessionID);
             ps.setInt(3, teacherID);
-            ps.setString(4, sort);
-            ps.setString(5, sortDirection);
 
             try(ResultSet rs = ps.executeQuery()) {
                 while(rs.next()) {
