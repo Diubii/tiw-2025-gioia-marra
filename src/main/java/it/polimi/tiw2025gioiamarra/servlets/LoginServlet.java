@@ -7,8 +7,17 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.h2.security.SHA256;
 
+import javax.crypto.*;
+import javax.crypto.spec.PBEKeySpec;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.Key;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.spec.KeySpec;
 import java.sql.SQLException;
 
 @WebServlet(name = "loginServlet", value = "/login")
@@ -40,6 +49,7 @@ public class LoginServlet extends HttpServlet {
 
         try(DatabaseConnection con = new DatabaseConnection()){
             String password = request.getParameter("password");
+
             switch (request.getAttribute("type")) {
                 case LoginType.Student -> {
                     if (con.getMySQLStudentDAO().login(id, password, request.getSession()))
