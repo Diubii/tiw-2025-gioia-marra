@@ -73,7 +73,7 @@
                     </a> Magari questo qui si può scommentare per far vedere al prof che lo studente non può entrare a vedere il voto di un appello a cui non si è iscritto -->
                     <a
                             th:if="${isStudent}"
-                            th:href="(${examSession.enrolled()} ? '/tiw/ExamResult' + '?course=' + ${examSession.courseID()} + '&session=' + ${examSession.id()}+ '&sort=matricola&order=asc' : '')"
+                            th:href="(${examSession.enrolled()} ? '/tiw/ExamResult' + '?course=' + ${examSession.courseID()} + '&session=' + ${examSession.id()} : '')"
                             th:text="${examSession.dateTime()}">
                     </a>
                     <a

@@ -1,6 +1,8 @@
 package it.polimi.tiw2025gioiamarra.servlets.teacher;
 
+import it.polimi.tiw2025gioiamarra.daos.interfaces.ExamSessionsDAO;
 import it.polimi.tiw2025gioiamarra.items.Enrollment;
+import it.polimi.tiw2025gioiamarra.items.ExamSession;
 import it.polimi.tiw2025gioiamarra.items.GradingStatus;
 import it.polimi.tiw2025gioiamarra.items.PageType;
 import it.polimi.tiw2025gioiamarra.utils.DatabaseConnection;
@@ -27,26 +29,26 @@ public class EnrolledStudentsServlet extends HttpServlet {
 
         //Handling order by selected column
         String sort = request.getParameter("sort");
-        sort = sort == null ? "matricola" : sort;
-//        Map<String, String> validSortFields = new HashMap<>();
-//        validSortFields.put("matricola", "matricola");
-//        validSortFields.put("cognome", "cognome");
-//        validSortFields.put("email", "email");
-//        validSortFields.put("corsoLaurea", "corsoLaurea");
-//        validSortFields.put("voto", "voto");
-//        validSortFields.put("statoValutazione", "statoValutazione");
-//        validSortFields.put("idVerbale", "idVerbale");
-//        String orderBy = validSortFields.getOrDefault(sort, "matricola"); // default
-
         String order = request.getParameter("order");
-        order = order == null ? "asc" : order;
+        if(sort != null && order == null){
+            response.sendRedirect(request.getRequestURI() + '?' + request.getQueryString() + "&order=asc");
+            return;
+        }
+        else if(sort == null && order != null){
+            response.sendRedirect(request.getRequestURI() + '?' + request.getQueryString() + "&sort=matricola");
+            return;
+        }
+        else if(sort == null && order == null){
+            response.sendRedirect(request.getRequestURI() + '?' + request.getQueryString() + "&sort=matricola&order=asc");
+            return;
+        }
 
         Integer courseID = null;
-        Integer sessionID = null;
+        Integer examSessionID = null;
 
         try{
             courseID = Integer.parseInt(request.getParameter("course"));
-            sessionID = Integer.parseInt(request.getParameter("session"));
+            examSessionID = Integer.parseInt(request.getParameter("session"));
         }
         catch (NumberFormatException e){
             if(courseID != null) response.sendRedirect("exam-sessions?course=" + courseID);
@@ -58,7 +60,14 @@ public class EnrolledStudentsServlet extends HttpServlet {
         ArrayList<String> grades;
 
         try(DatabaseConnection con = new DatabaseConnection()) {
-            enrollments = con.getMySQLExamSessionsDAO().getEnrolledStudents(courseID, sessionID, teacherID, sort, order);
+            ExamSessionsDAO examSessionsDAO = con.getMySQLExamSessionsDAO();
+
+            if(!examSessionsDAO.getTeacherExamSessionsIDs(courseID, teacherID).contains(examSessionID)){
+                response.sendRedirect("exam-sessions?course=" + courseID);
+                return;
+            }
+
+            enrollments = examSessionsDAO.getEnrolledStudents(courseID, examSessionID, teacherID, sort, order);
             grades = con.getGrades();
         } catch (SQLException e) {
             Utils.redirectToDBErrorPage(response);
@@ -70,7 +79,7 @@ public class EnrolledStudentsServlet extends HttpServlet {
         request.setAttribute("GradingStatus", GradingStatus.class);
         request.setAttribute("emptyReport", request.getParameter("emptyReport"));
         request.setAttribute("grades", grades);
-        session.setAttribute("examSession", sessionID);
+        session.setAttribute("examSession", examSessionID);
 
 
         //CONFIGURAZIONE LAYOUT

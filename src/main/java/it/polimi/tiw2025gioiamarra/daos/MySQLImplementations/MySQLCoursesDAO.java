@@ -26,6 +26,15 @@ public class MySQLCoursesDAO implements CoursesDAO {
     }
 
     @Override
+    public ArrayList<Integer> getStudentCoursesIDs(int studentID) throws SQLException {
+        ArrayList<Integer> coursesIDs = new ArrayList<>();
+        try(PreparedStatement ps = connection.prepareStatement("SELECT corso.idCorso FROM iscrizioneCorso JOIN corso ON iscrizioneCorso.idCorso = corso.idCorso WHERE iscrizioneCorso.matricola = ? ORDER BY nome DESC")) {
+            getCoursesIDs(studentID, coursesIDs, ps);
+        }
+        return coursesIDs;
+    }
+
+    @Override
     public ArrayList<Course> getTeacherCourses(int teacherID) throws SQLException {
         ArrayList<Course> courses = new ArrayList<>();
         try(PreparedStatement ps = connection.prepareStatement("SELECT * FROM corso WHERE codiceDocente = ? ORDER BY nome DESC")) {
@@ -35,7 +44,16 @@ public class MySQLCoursesDAO implements CoursesDAO {
     }
 
     @Override
-    public Course getCourse(int courseID) throws SQLException { //TODO: Mettere in sicurezza
+    public ArrayList<Integer> getTeacherCoursesIDs(int teacherID) throws SQLException {
+        ArrayList<Integer> coursesIDs = new ArrayList<>();
+        try(PreparedStatement ps = connection.prepareStatement("SELECT * FROM corso WHERE codiceDocente = ? ORDER BY nome DESC")) {
+            getCoursesIDs(teacherID, coursesIDs, ps);
+        }
+        return coursesIDs;
+    }
+
+    @Override
+    public Course getCourse(int courseID) throws SQLException {
         Course course = null;
         try(PreparedStatement ps = connection.prepareStatement("SELECT * FROM corso WHERE idCorso = ?")){
             ps.setInt(1, courseID);
@@ -71,13 +89,23 @@ public class MySQLCoursesDAO implements CoursesDAO {
         return courseName;
     }
 
-    private void getCourses(int teacherID, ArrayList<Course> courses, PreparedStatement ps) throws SQLException {
-        ps.setInt(1, teacherID);
+    private void getCourses(int userID, ArrayList<Course> courses, PreparedStatement ps) throws SQLException {
+        ps.setInt(1, userID);
         try(ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 int courseID = rs.getInt("idCorso");
                 String name = rs.getString("nome");
                 courses.add(new Course(courseID, name));
+            }
+        }
+    }
+
+    private void getCoursesIDs(int userID, ArrayList<Integer> coursesIDs, PreparedStatement ps) throws SQLException {
+        ps.setInt(1, userID);
+        try(ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                int courseID = rs.getInt("idCorso");
+                coursesIDs.add(courseID);
             }
         }
     }

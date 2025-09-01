@@ -10,5 +10,5 @@ public interface ReportsDAO {
     ArrayList<Report> getTeacherReports(int teacherID) throws SQLException;
     Report getReport(int reportID, int examSessionID, int teacherID) throws SQLException;
     ArrayList<Enrollment> getEnrollmentsInReport(int reportID) throws SQLException;
-    int generateReport(int sessionID) throws SQLException;
+    int generateReport(int sessionID, int teacherID) throws SQLException;
 }

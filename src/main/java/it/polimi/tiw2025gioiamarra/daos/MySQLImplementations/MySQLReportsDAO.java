@@ -75,7 +75,7 @@ public class MySQLReportsDAO implements ReportsDAO {
     }
 
     @Override
-    public int generateReport(int sessionID) throws SQLException { //TODO: Mettere in sicurezza con codiceDocente
+    public int generateReport(int sessionID, int teacherID) throws SQLException {
         connection.setAutoCommit(false);
 
         int idVerbale = -1;
@@ -96,16 +96,17 @@ public class MySQLReportsDAO implements ReportsDAO {
         }
 
         int updated;
-        try(PreparedStatement psUpdate = connection.prepareStatement("UPDATE esame " +
+        try(PreparedStatement psUpdate = connection.prepareStatement("UPDATE tiw.esame e JOIN tiw.appello a on a.idAppello = e.idAppello JOIN tiw.corso c on c.idCorso = a.idCorso JOIN tiw.docente d on c.codiceDocente = d.codiceDocente " +
                 "  SET  voto = CASE " +
                 "             WHEN statoValutazione = 'Rejected' THEN 'Rimandato' " +
                 "             ELSE voto " +
                 "            END, " +
                 "   statoValutazione = 'Verbalized', " +
                 "    idVerbale = ? " +
-                "WHERE idAppello = ? AND (statoValutazione = 'Published' OR statoValutazione = 'Rejected')")){
+                "WHERE a.idAppello = ? AND d.codiceDocente = ? AND (e.statoValutazione = 'Published' OR e.statoValutazione = 'Rejected')")){
             psUpdate.setInt(1, idVerbale);
             psUpdate.setInt(2, sessionID);
+            psUpdate.setInt(3, teacherID);
             updated = psUpdate.executeUpdate();
         }
         catch (SQLException e) {

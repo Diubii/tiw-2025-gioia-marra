@@ -49,10 +49,22 @@ public class ExamSessionsServlet extends HttpServlet {
             switch ((LoginType) session.getAttribute("type")){
                 case LoginType.Student -> {
                     int studentID = (int) session.getAttribute("student");
+
+                    if(!con.getMySQLCoursesDAO().getStudentCoursesIDs(studentID).contains(courseID)){
+                        response.sendRedirect("courses");
+                        return;
+                    }
+
                     examSessions = con.getMySQLExamSessionsDAO().getStudentExamSessions(courseID, studentID);
                 }
                 case LoginType.Teacher -> {
                     int teacherID = (int) session.getAttribute("teacher");
+
+                    if(!con.getMySQLCoursesDAO().getTeacherCoursesIDs(teacherID).contains(courseID)){
+                        response.sendRedirect("courses");
+                        return;
+                    }
+
                     examSessions = con.getMySQLExamSessionsDAO().getTeacherExamSessions(courseID, teacherID);
                 }
                 default -> examSessions = new ArrayList<>();

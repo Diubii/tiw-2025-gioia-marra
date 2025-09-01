@@ -42,7 +42,7 @@ public class GenerateReportServlet extends HttpServlet{
 
         //Faccio transazione, annullo se non ho associato nessun voto
         try (DatabaseConnection con = new DatabaseConnection()) {
-            reportID = con.getMySQLReportsDAO().generateReport(sessionID);
+            reportID = con.getMySQLReportsDAO().generateReport(sessionID, (Integer) session.getAttribute("teacher"));
         } catch (SQLException e) {
             Utils.redirectToDBErrorPage(response);
             return;

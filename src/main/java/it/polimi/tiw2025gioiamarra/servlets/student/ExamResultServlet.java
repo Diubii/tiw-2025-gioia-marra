@@ -1,7 +1,10 @@
 package it.polimi.tiw2025gioiamarra.servlets.student;
 
+import it.polimi.tiw2025gioiamarra.daos.interfaces.CoursesDAO;
 import it.polimi.tiw2025gioiamarra.daos.interfaces.ExamSessionsDAO;
+import it.polimi.tiw2025gioiamarra.items.Course;
 import it.polimi.tiw2025gioiamarra.items.Enrollment;
+import it.polimi.tiw2025gioiamarra.items.ExamSession;
 import it.polimi.tiw2025gioiamarra.items.PageType;
 import it.polimi.tiw2025gioiamarra.utils.DatabaseConnection;
 import it.polimi.tiw2025gioiamarra.utils.ThymeleafUtils;
@@ -43,19 +46,26 @@ public class ExamResultServlet extends HttpServlet {
 
         int studentID = (Integer) session.getAttribute("student");
         Enrollment enrollment;
-        String courseName;
+        Course course;
         Date dateTime;
 
-        try (DatabaseConnection con = new DatabaseConnection()) { //TODO: Redirigere se parametri errati o studente non iscritto
+        try (DatabaseConnection con = new DatabaseConnection()) {
             ExamSessionsDAO examSessionsDAO = con.getMySQLExamSessionsDAO();
-            enrollment = examSessionsDAO.getEnrollment(studentID, examSessionID);
 
-            if (enrollment == null) {
+            CoursesDAO coursesDAO = con.getMySQLCoursesDAO();
+            course = con.getMySQLCoursesDAO().getCourse(courseID);
+            if(course == null) {
+                response.sendRedirect("courses");
+                return;
+            }
+
+            ExamSession examSession = examSessionsDAO.getExamSession(examSessionID);
+            enrollment = examSessionsDAO.getEnrollment(studentID, examSessionID);
+            if (examSession == null || enrollment == null || !courseID.equals(coursesDAO.getCourseIDFromExamSessionID(examSessionID))) {
                 response.sendRedirect("exam-sessions?course=" + courseID);
                 return;
             }
 
-            courseName = con.getMySQLCoursesDAO().getCourse(enrollment.courseID()).name();
             dateTime = examSessionsDAO.getExamSession(examSessionID).dateTime();
         } catch (SQLException e) {
             Utils.redirectToDBErrorPage(response);
@@ -64,7 +74,7 @@ public class ExamResultServlet extends HttpServlet {
 
         //CONFIGURAZIONE PARAMETRI SPECIFICI PER LA PAGINA
         request.setAttribute("enrollment", enrollment);
-        request.setAttribute("courseName", courseName);
+        request.setAttribute("course", course);
         request.setAttribute("dateTime", dateTime);
         session.setAttribute("examSession", examSessionID);
         //session.setAttribute("student", studentNumber);
