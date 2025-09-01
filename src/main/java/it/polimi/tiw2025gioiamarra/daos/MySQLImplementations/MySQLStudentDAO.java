@@ -3,12 +3,15 @@ package it.polimi.tiw2025gioiamarra.daos.MySQLImplementations;
 import it.polimi.tiw2025gioiamarra.daos.interfaces.StudentDAO;
 import it.polimi.tiw2025gioiamarra.items.LoginType;
 import it.polimi.tiw2025gioiamarra.items.Student;
+import it.polimi.tiw2025gioiamarra.utils.PasswordUtils;
+import it.polimi.tiw2025gioiamarra.utils.Utils;
 import jakarta.servlet.http.HttpSession;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class MySQLStudentDAO implements StudentDAO {
     private final Connection connection;
@@ -16,6 +19,14 @@ public class MySQLStudentDAO implements StudentDAO {
     public MySQLStudentDAO(Connection connection) {
         this.connection = connection;
     }
+
+//    @Override
+//    public void updatePasswords(String newPassword) throws SQLException {
+//        try(PreparedStatement ps = connection.prepareStatement("UPDATE studente SET pass = ?")) {
+//            ps.setString(1, newPassword);
+//            ps.executeUpdate();
+//        }
+//    }
 
     @Override
     public Student getStudentFromID(int id) throws SQLException {
@@ -62,14 +73,16 @@ public class MySQLStudentDAO implements StudentDAO {
 
     @Override
     public boolean login(int id, String password, HttpSession session) throws SQLException {
-        try (PreparedStatement ps = connection.prepareStatement("SELECT * FROM studente where matricola=? and pass=?")) {
+        try (PreparedStatement ps = connection.prepareStatement("SELECT * FROM studente where matricola=?")) {
             ps.setInt(1, id);
-            ps.setString(2, password);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    session.setAttribute("type", LoginType.Student);
-                    session.setAttribute("student", rs.getInt("matricola"));
-                    return true;
+                    if(PasswordUtils.matches(password, rs.getString("pass"))) {
+                        session.setAttribute("type", LoginType.Student);
+                        session.setAttribute("student", rs.getInt("matricola"));
+                        return true;
+                    }
+                    else return false;
                 } else return false;
             }
         }
