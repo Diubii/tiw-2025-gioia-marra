@@ -21,7 +21,7 @@
         <input class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm text-center bg-white disabled:bg-gray-100 disabled:text-gray-500" type="text" id="studentFullName" th:value="|${enrollment.student().name()} ${enrollment.student().surname()}|" disabled/>
 
         <label class="block text-sm font-medium text-gray-700" for="coursename">Corso</label>
-        <input class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm text-center bg-white disabled:bg-gray-100 disabled:text-gray-500" type="text" id="coursename" th:value="${courseName}" disabled/>
+        <input class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm text-center bg-white disabled:bg-gray-100 disabled:text-gray-500" type="text" id="coursename" th:value="${course.name()}" disabled/>
 
         <label class="block text-sm font-medium text-gray-700" for="sessiondate">Data</label>
         <input class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm text-center bg-white disabled:bg-gray-100 disabled:text-gray-500"  type="text" id="sessiondate" th:value="${dateTime}" disabled/>
