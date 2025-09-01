@@ -1,6 +1,7 @@
 package it.polimi.tiw2025gioiamarra.servlets.student;
 
 import it.polimi.tiw2025gioiamarra.daos.interfaces.ExamSessionsDAO;
+import it.polimi.tiw2025gioiamarra.items.Course;
 import it.polimi.tiw2025gioiamarra.items.Enrollment;
 import it.polimi.tiw2025gioiamarra.items.PageType;
 import it.polimi.tiw2025gioiamarra.utils.DatabaseConnection;
@@ -43,7 +44,7 @@ public class ExamResultServlet extends HttpServlet {
 
         int studentID = (Integer) session.getAttribute("student");
         Enrollment enrollment;
-        String courseName;
+        Course course;
         Date dateTime;
 
         try (DatabaseConnection con = new DatabaseConnection()) { //TODO: Redirigere se parametri errati o studente non iscritto
@@ -55,7 +56,7 @@ public class ExamResultServlet extends HttpServlet {
                 return;
             }
 
-            courseName = con.getMySQLCoursesDAO().getCourse(enrollment.courseID()).name();
+            course = con.getMySQLCoursesDAO().getCourse(enrollment.courseID());
             dateTime = examSessionsDAO.getExamSession(examSessionID).dateTime();
         } catch (SQLException e) {
             Utils.redirectToDBErrorPage(response);
@@ -64,7 +65,7 @@ public class ExamResultServlet extends HttpServlet {
 
         //CONFIGURAZIONE PARAMETRI SPECIFICI PER LA PAGINA
         request.setAttribute("enrollment", enrollment);
-        request.setAttribute("courseName", courseName);
+        request.setAttribute("course", course);
         request.setAttribute("dateTime", dateTime);
         session.setAttribute("examSession", examSessionID);
         //session.setAttribute("student", studentNumber);
