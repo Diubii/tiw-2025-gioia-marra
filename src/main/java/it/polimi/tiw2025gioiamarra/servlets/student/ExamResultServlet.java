@@ -46,7 +46,7 @@ public class ExamResultServlet extends HttpServlet {
         String courseName;
         Date dateTime;
 
-        try (DatabaseConnection con = new DatabaseConnection()) {
+        try (DatabaseConnection con = new DatabaseConnection()) { //TODO: Redirigere se parametri errati o studente non iscritto
             ExamSessionsDAO examSessionsDAO = con.getMySQLExamSessionsDAO();
             enrollment = examSessionsDAO.getEnrollment(studentID, examSessionID);
 
