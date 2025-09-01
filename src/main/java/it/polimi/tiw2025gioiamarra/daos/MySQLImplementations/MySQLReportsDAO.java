@@ -2,6 +2,7 @@ package it.polimi.tiw2025gioiamarra.daos.MySQLImplementations;
 
 import it.polimi.tiw2025gioiamarra.daos.interfaces.ExamSessionsDAO;
 import it.polimi.tiw2025gioiamarra.daos.interfaces.ReportsDAO;
+import it.polimi.tiw2025gioiamarra.items.Course;
 import it.polimi.tiw2025gioiamarra.items.Enrollment;
 import it.polimi.tiw2025gioiamarra.items.Report;
 
@@ -25,7 +26,8 @@ public class MySQLReportsDAO implements ReportsDAO {
                 while (rs.next()) {
                     int reportId = Integer.parseInt(rs.getString("idVerbale"));
                     int courseID = rs.getInt("idCorso");
-                    Report report = new Report(reportId, rs.getDate("dataVerbale"), courseID, rs.getDate("dataAppello"), Integer.parseInt(rs.getString("idAppello")));
+                    Course course = new Course(courseID, rs.getString("nome"));
+                    Report report = new Report(reportId, rs.getDate("dataVerbale"), course, rs.getDate("dataAppello"), Integer.parseInt(rs.getString("idAppello")));
                     reports.add(report);
                 }
             }
@@ -43,7 +45,8 @@ public class MySQLReportsDAO implements ReportsDAO {
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     int courseID = rs.getInt("idCorso");
-                    return new Report(reportID, rs.getDate("dataVerbale"), courseID, rs.getDate("dataAppello"), Integer.parseInt(rs.getString("idAppello")));
+                    Course course = new Course(courseID, rs.getString("nome"));
+                    return new Report(reportID, rs.getDate("dataVerbale"), course, rs.getDate("dataAppello"), Integer.parseInt(rs.getString("idAppello")));
                 }
                 else return null;
             }
@@ -100,8 +103,9 @@ public class MySQLReportsDAO implements ReportsDAO {
                 "            END, " +
                 "   statoValutazione = 'Verbalized', " +
                 "    idVerbale = ? " +
-                "WHERE statoValutazione = 'Published' OR statoValutazione = 'Rejected'")){
+                "WHERE idAppello = ? AND ( statoValutazione = 'Published' OR statoValutazione = 'Rejected')")){
             psUpdate.setInt(1, idVerbale);
+            psUpdate.setInt(2, sessionID);
             updated = psUpdate.executeUpdate();
         }
         catch (SQLException e) {
