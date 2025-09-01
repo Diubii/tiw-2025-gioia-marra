@@ -28,15 +28,6 @@ public class EnrolledStudentsServlet extends HttpServlet {
         //Handling order by selected column
         String sort = request.getParameter("sort");
         sort = sort == null ? "matricola" : sort;
-//        Map<String, String> validSortFields = new HashMap<>();
-//        validSortFields.put("matricola", "matricola");
-//        validSortFields.put("cognome", "cognome");
-//        validSortFields.put("email", "email");
-//        validSortFields.put("corsoLaurea", "corsoLaurea");
-//        validSortFields.put("voto", "voto");
-//        validSortFields.put("statoValutazione", "statoValutazione");
-//        validSortFields.put("idVerbale", "idVerbale");
-//        String orderBy = validSortFields.getOrDefault(sort, "matricola"); // default
 
         String order = request.getParameter("order");
         order = order == null ? "asc" : order;
